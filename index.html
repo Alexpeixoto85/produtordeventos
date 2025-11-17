@@ -63,8 +63,12 @@
             gap: 10px;
         }
         
-        .logo i {
+        .logo i, .logo img {
             font-size: 1.8rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            object-fit: cover;
         }
         
         .logo h1 {
@@ -115,6 +119,7 @@
             font-weight: 500;
             border-bottom: 3px solid transparent;
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
         
         .nav-tabs a:hover, .nav-tabs a.active {
@@ -254,12 +259,12 @@
         
         .btn-outline {
             background-color: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
+            border: 1px solid var(--gray);
+            color: var(--gray);
         }
         
         .btn-outline:hover {
-            background-color: var(--primary);
+            background-color: var(--gray);
             color: white;
         }
         
@@ -270,11 +275,13 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             overflow: hidden;
             margin-bottom: 30px;
+            overflow-x: auto;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 800px;
         }
         
         thead {
@@ -285,6 +292,7 @@
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid #eee;
+            white-space: nowrap;
         }
         
         th {
@@ -304,22 +312,22 @@
             font-weight: 500;
         }
         
-        .status.pending {
+        .status.pending, .status.Pendente, .status.Indisponível, .status.Manutenção {
             background-color: #fff3cd;
             color: #856404;
         }
         
-        .status.confirmed {
-            background-color: #d1ecf1;
-            color: #0c5460;
-        }
-        
-        .status.completed {
+        .status.confirmed, .status.Confirmado, .status.Disponível, .status.Ativo, .status.Aprovado, .status.Bom {
             background-color: #d4edda;
             color: #155724;
         }
         
-        .status.cancelled {
+        .status.completed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status.cancelled, .status.Cancelado, .status.Recusado {
             background-color: #f8d7da;
             color: #721c24;
         }
@@ -336,14 +344,30 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f8f9fa;
+            background-color: #f0f0f0;
             color: var(--gray);
             cursor: pointer;
             transition: all 0.3s ease;
+            border: none;
         }
         
         .action-btn:hover {
             background-color: var(--primary);
+            color: white;
+        }
+        
+        .action-btn.edit:hover {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .action-btn.delete:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .action-btn.pdf:hover {
+            background-color: var(--info);
             color: white;
         }
         
@@ -367,16 +391,17 @@
             color: var(--dark);
         }
         
-        .form-control {
+        .form-control, .form-select {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 1rem;
             transition: border 0.3s ease;
+            background-color: white;
         }
         
-        .form-control:focus {
+        .form-control:focus, .form-select:focus {
             border-color: var(--primary);
             outline: none;
         }
@@ -416,6 +441,8 @@
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
         }
         
         .modal-header {
@@ -441,6 +468,7 @@
         
         .modal-body {
             padding: 25px;
+            overflow-y: auto;
         }
         
         .modal-footer {
@@ -449,8 +477,79 @@
             display: flex;
             justify-content: flex-end;
             gap: 10px;
+            background-color: #f8f9fa;
         }
         
+        /* Configurações */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .logo-preview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        #logoPreview {
+            width: 150px;
+            height: 150px;
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            object-fit: contain;
+            padding: 10px;
+            background-color: #f8f9fa;
+        }
+        
+        #logoUpload {
+            display: none;
+        }
+        
+        .btn-upload {
+            background-color: var(--info);
+        }
+        
+        .btn-upload:hover {
+            background-color: #138496;
+        }
+        
+        .danger-zone {
+            border: 1px solid var(--danger);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .danger-zone h4 {
+            color: var(--danger);
+            margin-bottom: 15px;
+        }
+        
+        .danger-zone .form-group {
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .dashboard-cards {
@@ -468,14 +567,6 @@
             
             .nav-tabs li {
                 min-width: 100px;
-            }
-            
-            .table-container {
-                overflow-x: auto;
-            }
-            
-            table {
-                min-width: 700px;
             }
         }
         
@@ -500,7 +591,8 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <i class="fas fa-calendar-alt"></i>
+                    <img src="" alt="Logo" id="headerLogo" style="display: none;">
+                    <i class="fas fa-calendar-alt" id="headerIcon"></i>
                     <h1>EventPro</h1>
                 </div>
                 <div class="user-info">
@@ -524,21 +616,23 @@
                 <li><a href="#contratos" class="nav-link"><i class="fas fa-file-contract"></i> Contratos</a></li>
                 <li><a href="#eventos" class="nav-link"><i class="fas fa-calendar-check"></i> Eventos</a></li>
                 <li><a href="#equipamentos" class="nav-link"><i class="fas fa-tools"></i> Equipamentos</a></li>
+                <li><a href="#configuracoes" class="nav-link"><i class="fas fa-cog"></i> Configurações</a></li>
             </ul>
         </div>
     </nav>
     
     <main class="container">
-        <!-- Dashboard -->
         <section id="dashboard" class="tab-content active">
-            <h2 class="section-title">Dashboard</h2>
+            <div class="section-title">
+                <h2>Dashboard</h2>
+            </div>
             
             <div class="dashboard-cards">
                 <div class="card">
                     <div class="card-icon primary">
                         <i class="fas fa-calendar-check"></i>
                     </div>
-                    <h3>12</h3>
+                    <h3 id="dashEventosAtivos">0</h3>
                     <p>Eventos Ativos</p>
                 </div>
                 
@@ -546,7 +640,7 @@
                     <div class="card-icon success">
                         <i class="fas fa-file-invoice-dollar"></i>
                     </div>
-                    <h3>8</h3>
+                    <h3 id="dashOrcamentosPendentes">0</h3>
                     <p>Orçamentos Pendentes</p>
                 </div>
                 
@@ -554,26 +648,26 @@
                     <div class="card-icon warning">
                         <i class="fas fa-users"></i>
                     </div>
-                    <h3>24</h3>
+                    <h3 id="dashClientesAtivos">0</h3>
                     <p>Clientes Ativos</p>
                 </div>
                 
                 <div class="card">
                     <div class="card-icon danger">
-                        <i class="fas fa-exclamation-circle"></i>
+                        <i class="fas fa-user-tie"></i>
                     </div>
-                    <h3>3</h3>
-                    <p>Contratos Vencendo</p>
+                    <h3 id="dashProfissionais">0</h3>
+                    <p>Profissionais</p>
                 </div>
             </div>
             
             <div class="section-title">
                 <h2>Próximos Eventos</h2>
-                <a href="#" class="btn"><i class="fas fa-plus"></i> Novo Evento</a>
+                <button class="btn btn-show-modal" data-modal="eventoModal"><i class="fas fa-plus"></i> Novo Evento</button>
             </div>
             
             <div class="table-container">
-                <table>
+                <table id="eventosTable">
                     <thead>
                         <tr>
                             <th>Evento</th>
@@ -585,56 +679,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Casamento Ana & João</td>
-                            <td>Ana Silva</td>
-                            <td>15/10/2023</td>
-                            <td>Salão Primavera</td>
-                            <td><span class="status confirmed">Confirmado</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-file-pdf"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Conferência Tech 2023</td>
-                            <td>Empresa XYZ</td>
-                            <td>22/10/2023</td>
-                            <td>Centro de Convenções</td>
-                            <td><span class="status pending">Pendente</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-file-pdf"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Aniversário 50 anos</td>
-                            <td>Carlos Mendes</td>
-                            <td>05/11/2023</td>
-                            <td>Chácara Sol Nascente</td>
-                            <td><span class="status confirmed">Confirmado</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-file-pdf"></i></div>
-                            </td>
-                        </tr>
-                    </tbody>
+                       </tbody>
                 </table>
             </div>
         </section>
         
-        <!-- Clientes -->
         <section id="clientes" class="tab-content">
             <div class="section-title">
                 <h2>Clientes</h2>
-                <button class="btn" id="addClienteBtn"><i class="fas fa-plus"></i> Novo Cliente</button>
+                <button class="btn btn-show-modal" data-modal="clienteModal"><i class="fas fa-plus"></i> Novo Cliente</button>
             </div>
             
             <div class="table-container">
-                <table>
+                <table id="clientesTable">
                     <thead>
                         <tr>
                             <th>Nome</th>
@@ -646,56 +703,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Ana Silva</td>
-                            <td>ana.silva@email.com</td>
-                            <td>(11) 99999-9999</td>
-                            <td>Pessoa Física</td>
-                            <td>3</td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-trash"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Empresa XYZ</td>
-                            <td>contato@xyz.com</td>
-                            <td>(11) 88888-8888</td>
-                            <td>Pessoa Jurídica</td>
-                            <td>5</td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-trash"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Carlos Mendes</td>
-                            <td>carlos.mendes@email.com</td>
-                            <td>(11) 77777-7777</td>
-                            <td>Pessoa Física</td>
-                            <td>2</td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-trash"></i></div>
-                            </td>
-                        </tr>
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </section>
         
-        <!-- Profissionais -->
         <section id="profissionais" class="tab-content">
             <div class="section-title">
                 <h2>Profissionais</h2>
-                <button class="btn" id="addProfissionalBtn"><i class="fas fa-plus"></i> Novo Profissional</button>
+                <button class="btn btn-show-modal" data-modal="profissionalModal"><i class="fas fa-plus"></i> Novo Profissional</button>
             </div>
             
             <div class="table-container">
-                <table>
+                <table id="profissionaisTable">
                     <thead>
                         <tr>
                             <th>Nome</th>
@@ -707,56 +727,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>João Santos</td>
-                            <td>Sonorização</td>
-                            <td>joao.santos@email.com</td>
-                            <td>(11) 99999-8888</td>
-                            <td><span class="status confirmed">Disponível</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-trash"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Maria Oliveira</td>
-                            <td>Iluminação</td>
-                            <td>maria.oliveira@email.com</td>
-                            <td>(11) 88888-7777</td>
-                            <td><span class="status pending">Indisponível</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-trash"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Pedro Costa</td>
-                            <td>Coordenação</td>
-                            <td>pedro.costa@email.com</td>
-                            <td>(11) 77777-6666</td>
-                            <td><span class="status confirmed">Disponível</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-trash"></i></div>
-                            </td>
-                        </tr>
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </section>
         
-        <!-- Fornecedores -->
         <section id="fornecedores" class="tab-content">
             <div class="section-title">
                 <h2>Fornecedores</h2>
-                <button class="btn" id="addFornecedorBtn"><i class="fas fa-plus"></i> Novo Fornecedor</button>
+                <button class="btn btn-show-modal" data-modal="fornecedorModal"><i class="fas fa-plus"></i> Novo Fornecedor</button>
             </div>
             
             <div class="table-container">
-                <table>
+                <table id="fornecedoresTable">
                     <thead>
                         <tr>
                             <th>Empresa</th>
@@ -768,56 +751,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Som & Cia</td>
-                            <td>Equipamentos de Áudio</td>
-                            <td>contato@somcia.com</td>
-                            <td>(11) 99999-1111</td>
-                            <td>★★★★☆</td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-trash"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Luz Eventos</td>
-                            <td>Iluminação e Efeitos</td>
-                            <td>vendas@luzeventos.com</td>
-                            <td>(11) 88888-2222</td>
-                            <td>★★★★★</td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-trash"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Decora Fácil</td>
-                            <td>Decoração e Cenografia</td>
-                            <td>orcamento@decorafacil.com</td>
-                            <td>(11) 77777-3333</td>
-                            <td>★★★☆☆</td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-trash"></i></div>
-                            </td>
-                        </tr>
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </section>
         
-        <!-- Orçamentos -->
         <section id="orcamentos" class="tab-content">
             <div class="section-title">
                 <h2>Orçamentos</h2>
-                <button class="btn" id="addOrcamentoBtn"><i class="fas fa-plus"></i> Novo Orçamento</button>
+                <button class="btn btn-show-modal" data-modal="orcamentoModal"><i class="fas fa-plus"></i> Novo Orçamento</button>
             </div>
             
             <div class="table-container">
-                <table>
+                <table id="orcamentosTable">
                     <thead>
                         <tr>
                             <th>Nº</th>
@@ -830,59 +776,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>#00123</td>
-                            <td>Ana Silva</td>
-                            <td>Casamento</td>
-                            <td>10/08/2023</td>
-                            <td>R$ 15.000,00</td>
-                            <td><span class="status confirmed">Aprovado</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-file-pdf"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#00124</td>
-                            <td>Empresa XYZ</td>
-                            <td>Conferência</td>
-                            <td>12/08/2023</td>
-                            <td>R$ 25.000,00</td>
-                            <td><span class="status pending">Pendente</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-file-pdf"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#00125</td>
-                            <td>Carlos Mendes</td>
-                            <td>Aniversário</td>
-                            <td>15/08/2023</td>
-                            <td>R$ 8.500,00</td>
-                            <td><span class="status cancelled">Recusado</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-file-pdf"></i></div>
-                            </td>
-                        </tr>
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </section>
         
-        <!-- Contratos -->
         <section id="contratos" class="tab-content">
             <div class="section-title">
                 <h2>Contratos</h2>
-                <button class="btn" id="addContratoBtn"><i class="fas fa-plus"></i> Novo Contrato</button>
+                <button class="btn btn-show-modal" data-modal="contratoModal"><i class="fas fa-plus"></i> Novo Contrato</button>
             </div>
             
             <div class="table-container">
-                <table>
+                <table id="contratosTable">
                     <thead>
                         <tr>
                             <th>Nº</th>
@@ -895,59 +801,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>#CT001</td>
-                            <td>Ana Silva</td>
-                            <td>Casamento</td>
-                            <td>12/08/2023</td>
-                            <td>15/10/2023</td>
-                            <td><span class="status confirmed">Ativo</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-file-pdf"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#CT002</td>
-                            <td>Empresa XYZ</td>
-                            <td>Conferência</td>
-                            <td>18/08/2023</td>
-                            <td>22/10/2023</td>
-                            <td><span class="status pending">Pendente</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-file-pdf"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#CT003</td>
-                            <td>Carlos Mendes</td>
-                            <td>Aniversário</td>
-                            <td>20/08/2023</td>
-                            <td>05/11/2023</td>
-                            <td><span class="status confirmed">Ativo</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-file-pdf"></i></div>
-                            </td>
-                        </tr>
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </section>
         
-        <!-- Eventos -->
         <section id="eventos" class="tab-content">
             <div class="section-title">
                 <h2>Eventos</h2>
-                <button class="btn" id="addEventoBtn"><i class="fas fa-plus"></i> Novo Evento</button>
+                <button class="btn btn-show-modal" data-modal="eventoModal"><i class="fas fa-plus"></i> Novo Evento</button>
             </div>
             
             <div class="table-container">
-                <table>
+                <table id="todosEventosTable">
                     <thead>
                         <tr>
                             <th>Evento</th>
@@ -960,59 +826,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Casamento Ana & João</td>
-                            <td>Ana Silva</td>
-                            <td>15/10/2023</td>
-                            <td>Salão Primavera</td>
-                            <td>R$ 15.000,00</td>
-                            <td><span class="status confirmed">Confirmado</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-file-pdf"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Conferência Tech 2023</td>
-                            <td>Empresa XYZ</td>
-                            <td>22/10/2023</td>
-                            <td>Centro de Convenções</td>
-                            <td>R$ 25.000,00</td>
-                            <td><span class="status pending">Pendente</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-file-pdf"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Aniversário 50 anos</td>
-                            <td>Carlos Mendes</td>
-                            <td>05/11/2023</td>
-                            <td>Chácara Sol Nascente</td>
-                            <td>R$ 8.500,00</td>
-                            <td><span class="status confirmed">Confirmado</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-file-pdf"></i></div>
-                            </td>
-                        </tr>
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </section>
         
-        <!-- Equipamentos -->
         <section id="equipamentos" class="tab-content">
             <div class="section-title">
                 <h2>Equipamentos</h2>
-                <button class="btn" id="addEquipamentoBtn"><i class="fas fa-plus"></i> Novo Equipamento</button>
+                <button class="btn btn-show-modal" data-modal="equipamentoModal"><i class="fas fa-plus"></i> Novo Equipamento</button>
             </div>
             
             <div class="table-container">
-                <table>
+                <table id="equipamentosTable">
                     <thead>
                         <tr>
                             <th>Equipamento</th>
@@ -1024,174 +850,1203 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Mesa de Som 16 Canais</td>
-                            <td>Áudio</td>
-                            <td>3</td>
-                            <td>2</td>
-                            <td><span class="status confirmed">Bom</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-trash"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Projetor 5000 Lumens</td>
-                            <td>Vídeo</td>
-                            <td>5</td>
-                            <td>3</td>
-                            <td><span class="status pending">Manutenção</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-trash"></i></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Par 56 LED RGB</td>
-                            <td>Iluminação</td>
-                            <td>20</td>
-                            <td>15</td>
-                            <td><span class="status confirmed">Bom</span></td>
-                            <td class="actions">
-                                <div class="action-btn"><i class="fas fa-eye"></i></div>
-                                <div class="action-btn"><i class="fas fa-edit"></i></div>
-                                <div class="action-btn"><i class="fas fa-trash"></i></div>
-                            </td>
-                        </tr>
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </section>
+
+        <section id="configuracoes" class="tab-content">
+            <div class="section-title">
+                <h2>Configurações</h2>
+                <button class="btn" id="saveSettingsBtn"><i class="fas fa-save"></i> Salvar Configurações</button>
+            </div>
+
+            <div class="settings-grid">
+                <div class="form-container">
+                    <h3>Dados da Empresa</h3>
+                    <form id="settingsForm">
+                        <div class="form-group">
+                            <label for="logoUploadInput">Logo da Empresa</label>
+                            <div class="logo-preview-container">
+                                <img src="" alt="Preview do Logo" id="logoPreview">
+                                <input type="file" id="logoUploadInput" accept="image/*">
+                                <label for="logoUploadInput" class="btn btn-upload"><i class="fas fa-upload"></i> Escolher Imagem</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="empresaNome">Nome da Empresa</label>
+                            <input type="text" id="empresaNome" class="form-control" placeholder="EventPro">
+                        </div>
+                        <div class="form-group">
+                            <label for="empresaContato">Email de Contato</label>
+                            <input type="email" id="empresaContato" class="form-control" placeholder="contato@eventpro.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="empresaTelefone">Telefone</label>
+                            <input type="tel" id="empresaTelefone" class="form-control" placeholder="(00) 00000-0000">
+                        </div>
+                        <div class="form-group">
+                            <label for="empresaEndereco">Endereço</label>
+                            <input type="text" id="empresaEndereco" class="form-control" placeholder="Rua das Eventualidades, 123">
+                        </div>
+                    </form>
+                </div>
+
+                <div class="form-container">
+                    <h3>Backup e Restauração</h3>
+                    
+                    <div class="form-group">
+                        <label>Backup dos Dados</label>
+                        <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 10px;">Salve todos os seus dados (clientes, eventos, etc.) em um arquivo JSON.</p>
+                        <button class="btn btn-success" id="backupBtn"><i class="fas fa-download"></i> Fazer Backup</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="restoreFile">Restaurar Dados</label>
+                        <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 10px;">Importe um arquivo de backup JSON. Isso substituirá todos os dados atuais.</p>
+                        <input type="file" id="restoreFile" class="form-control" accept=".json">
+                        <button class="btn btn-warning" id="restoreBtn" style="margin-top: 10px;"><i class="fas fa-upload"></i> Restaurar</button>
+                    </div>
+                    
+                    <div class="danger-zone" style="margin-top: 20px;">
+                        <h4>Zona de Perigo</h4>
+                        <div class="form-group">
+                            <label>Limpar Sistema</label>
+                            <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 10px;">Apaga permanentemente todos os dados do sistema. Esta ação não pode ser desfeita.</p>
+                            <button class="btn btn-danger" id="clearSystemBtn"><i class="fas fa-trash-alt"></i> Limpar Sistema</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
     
-    <!-- Modal para adicionar cliente -->
     <div class="modal" id="clienteModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Adicionar Cliente</h3>
+                <h3 id="clienteModalTitle">Adicionar Cliente</h3>
                 <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="clienteForm">
+                    <input type="hidden" id="clienteId">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="nome">Nome Completo</label>
-                            <input type="text" id="nome" class="form-control" required>
+                            <label for="clienteNome">Nome Completo</label>
+                            <input type="text" id="clienteNome" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="tipo">Tipo</label>
-                            <select id="tipo" class="form-control" required>
+                            <label for="clienteTipo">Tipo</label>
+                            <select id="clienteTipo" class="form-select" required>
                                 <option value="">Selecione</option>
-                                <option value="pf">Pessoa Física</option>
-                                <option value="pj">Pessoa Jurídica</option>
+                                <option value="Pessoa Física">Pessoa Física</option>
+                                <option value="Pessoa Jurídica">Pessoa Jurídica</option>
                             </select>
                         </div>
                     </div>
-                    
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" class="form-control" required>
+                            <label for="clienteEmail">Email</label>
+                            <input type="email" id="clienteEmail" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="telefone">Telefone</label>
-                            <input type="tel" id="telefone" class="form-control" required>
+                            <label for="clienteTelefone">Telefone</label>
+                            <input type="tel" id="clienteTelefone" class="form-control" required>
                         </div>
                     </div>
-                    
                     <div class="form-group">
-                        <label for="endereco">Endereço</label>
-                        <input type="text" id="endereco" class="form-control">
+                        <label for="clienteEndereco">Endereço</label>
+                        <input type="text" id="clienteEndereco" class="form-control">
                     </div>
-                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Cancelar</button>
+                <button class="btn" id="saveClienteBtn">Salvar Cliente</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="profissionalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="profissionalModalTitle">Adicionar Profissional</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="profissionalForm">
+                    <input type="hidden" id="profissionalId">
+                    <div class="form-group">
+                        <label for="profissionalNome">Nome Completo</label>
+                        <input type="text" id="profissionalNome" class="form-control" required>
+                    </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="cidade">Cidade</label>
-                            <input type="text" id="cidade" class="form-control">
+                            <label for="profissionalEspecialidade">Especialidade</label>
+                            <input type="text" id="profissionalEspecialidade" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="estado">Estado</label>
-                            <input type="text" id="estado" class="form-control">
+                            <label for="profissionalDisponibilidade">Disponibilidade</label>
+                            <select id="profissionalDisponibilidade" class="form-select" required>
+                                <option value="Disponível">Disponível</option>
+                                <option value="Indisponível">Indisponível</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profissionalEmail">Email</label>
+                            <input type="email" id="profissionalEmail" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profissionalTelefone">Telefone</label>
+                            <input type="tel" id="profissionalTelefone" class="form-control" required>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline">Cancelar</button>
-                <button class="btn">Salvar Cliente</button>
+                <button class="btn btn-outline modal-close-btn">Cancelar</button>
+                <button class="btn" id="saveProfissionalBtn">Salvar Profissional</button>
             </div>
         </div>
     </div>
+
+    <div class="modal" id="fornecedorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="fornecedorModalTitle">Adicionar Fornecedor</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="fornecedorForm">
+                    <input type="hidden" id="fornecedorId">
+                    <div class="form-group">
+                        <label for="fornecedorEmpresa">Nome da Empresa</label>
+                        <input type="text" id="fornecedorEmpresa" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fornecedorServico">Serviço/Produto</label>
+                        <input type="text" id="fornecedorServico" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fornecedorContato">Email de Contato</label>
+                            <input type="email" id="fornecedorContato" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fornecedorTelefone">Telefone</label>
+                            <input type="tel" id="fornecedorTelefone" class="form-control" required>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label for="fornecedorAvaliacao">Avaliação</label>
+                        <select id="fornecedorAvaliacao" class="form-select" required>
+                            <option value="★☆☆☆☆">★☆☆☆☆</option>
+                            <option value="★★☆☆☆">★★☆☆☆</option>
+                            <option value="★★★☆☆">★★★☆☆</option>
+                            <option value="★★★★☆">★★★★☆</option>
+                            <option value="★★★★★">★★★★★</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Cancelar</button>
+                <button class="btn" id="saveFornecedorBtn">Salvar Fornecedor</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="orcamentoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="orcamentoModalTitle">Adicionar Orçamento</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="orcamentoForm">
+                    <input type="hidden" id="orcamentoId">
+                    <div class="form-group">
+                        <label for="orcamentoNumero">Nº Orçamento</label>
+                        <input type="text" id="orcamentoNumero" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="orcamentoCliente">Cliente</label>
+                            <select id="orcamentoCliente" class="form-select" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="orcamentoEvento">Evento</label>
+                            <input type="text" id="orcamentoEvento" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="orcamentoData">Data</label>
+                            <input type="date" id="orcamentoData" class="form-control" required>
+                        </div>
+                         <div class="form-group">
+                            <label for="orcamentoValor">Valor (R$)</label>
+                            <input type="number" id="orcamentoValor" class="form-control" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="orcamentoStatus">Status</label>
+                        <select id="orcamentoStatus" class="form-select" required>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Aprovado">Aprovado</option>
+                            <option value="Recusado">Recusado</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Cancelar</button>
+                <button class="btn" id="saveOrcamentoBtn">Salvar Orçamento</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="contratoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="contratoModalTitle">Adicionar Contrato</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="contratoForm">
+                    <input type="hidden" id="contratoId">
+                    <div class="form-group">
+                        <label for="contratoNumero">Nº Contrato</label>
+                        <input type="text" id="contratoNumero" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contratoCliente">Cliente</label>
+                            <select id="contratoCliente" class="form-select" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="contratoEvento">Evento</label>
+                            <input type="text" id="contratoEvento" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contratoData">Data Assinatura</label>
+                            <input type="date" id="contratoData" class="form-control" required>
+                        </div>
+                         <div class="form-group">
+                            <label for="contratoVencimento">Data Vencimento</label>
+                            <input type="date" id="contratoVencimento" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contratoStatus">Status</label>
+                        <select id="contratoStatus" class="form-select" required>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Ativo">Ativo</option>
+                            <option value="Concluído">Concluído</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Cancelar</button>
+                <button class="btn" id="saveContratoBtn">Salvar Contrato</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="eventoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="eventoModalTitle">Adicionar Evento</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="eventoForm">
+                    <input type="hidden" id="eventoId">
+                    <div class="form-group">
+                        <label for="eventoNome">Nome do Evento</label>
+                        <input type="text" id="eventoNome" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventoCliente">Cliente</label>
+                            <select id="eventoCliente" class="form-select" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventoData">Data do Evento</label>
+                            <input type="date" id="eventoData" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                         <div class="form-group">
+                            <label for="eventoLocal">Local</label>
+                            <input type="text" id="eventoLocal" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventoOrcamento">Orçamento (R$)</label>
+                            <input type="number" id="eventoOrcamento" class="form-control" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventoStatus">Status</label>
+                        <select id="eventoStatus" class="form-select" required>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Confirmado">Confirmado</option>
+                            <option value="Realizado">Realizado</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Cancelar</button>
+                <button class="btn" id="saveEventoBtn">Salvar Evento</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="equipamentoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="equipamentoModalTitle">Adicionar Equipamento</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="equipamentoForm">
+                    <input type="hidden" id="equipamentoId">
+                    <div class="form-group">
+                        <label for="equipamentoNome">Nome do Equipamento</label>
+                        <input type="text" id="equipamentoNome" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="equipamentoCategoria">Categoria</label>
+                        <input type="text" id="equipamentoCategoria" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="equipamentoQuantidade">Quantidade Total</label>
+                            <input type="number" id="equipamentoQuantidade" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipamentoDisponivel">Disponível</label>
+                            <input type="number" id="equipamentoDisponivel" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="equipamentoEstado">Estado</label>
+                        <select id="equipamentoEstado" class="form-select" required>
+                            <option value="Bom">Bom</option>
+                            <option value="Manutenção">Manutenção</option>
+                            <option value="Quebrado">Quebrado</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Cancelar</button>
+                <button class="btn" id="saveEquipamentoBtn">Salvar Equipamento</button>
+            </div>
+        </div>
+    </div>
+
     
     <script>
-        // Navegação entre abas
-        document.querySelectorAll('.nav-link').forEach(link => {
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // --- INICIALIZAÇÃO E BANCO DE DADOS (LocalStorage) ---
+
+        const { jsPDF } = window.jspdf;
+        let db;
+
+        const defaultDB = {
+            clientes: [],
+            profissionais: [],
+            fornecedores: [],
+            orcamentos: [],
+            contratos: [],
+            eventos: [],
+            equipamentos: [],
+            settings: {
+                logo: '',
+                nome: 'EventPro',
+                contato: '',
+                telefone: '',
+                endereco: ''
+            }
+        };
+
+        function loadDB() {
+            db = JSON.parse(localStorage.getItem('eventProDB')) || defaultDB;
+        }
+
+        function saveDB() {
+            localStorage.setItem('eventProDB', JSON.stringify(db));
+        }
+
+        // --- NAVEGAÇÃO ENTRE ABAS ---
+        const navLinks = document.querySelectorAll('.nav-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        navLinks.forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 
-                // Remove a classe active de todas as abas e conteúdos
-                document.querySelectorAll('.nav-link').forEach(item => {
-                    item.classList.remove('active');
-                });
+                navLinks.forEach(item => item.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
                 
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-                
-                // Adiciona a classe active à aba clicada
                 this.classList.add('active');
-                
-                // Mostra o conteúdo correspondente
                 const target = this.getAttribute('href');
                 document.querySelector(target).classList.add('active');
             });
         });
+
+        // --- LÓGICA GERAL DE MODAIS ---
+        const modals = document.querySelectorAll('.modal');
         
-        // Modal para adicionar cliente
-        const addClienteBtn = document.getElementById('addClienteBtn');
-        const clienteModal = document.getElementById('clienteModal');
-        const modalClose = document.querySelector('.modal-close');
-        
-        if (addClienteBtn) {
-            addClienteBtn.addEventListener('click', () => {
-                clienteModal.classList.add('active');
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modal) {
+            modal.classList.remove('active');
+            // Limpa todos os formulários dentro do modal
+            modal.querySelectorAll('form').forEach(form => form.reset());
+            modal.querySelectorAll('input[type="hidden"]').forEach(input => input.value = '');
+            // Reseta títulos
+            modal.querySelectorAll('.modal-header h3').forEach(title => {
+                if (title.id.includes('Title')) {
+                    title.textContent = title.textContent.replace('Editar', 'Adicionar');
+                }
             });
         }
-        
-        if (modalClose) {
-            modalClose.addEventListener('click', () => {
-                clienteModal.classList.remove('active');
+
+        // Abrir modal
+        document.querySelectorAll('.btn-show-modal').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const modalId = btn.getAttribute('data-modal');
+                // Popula selects de cliente antes de abrir
+                if (modalId === 'orcamentoModal' || modalId === 'contratoModal' || modalId === 'eventoModal') {
+                    populateClienteSelects();
+                }
+                openModal(modalId);
             });
-        }
-        
+        });
+
+        // Fechar modal
+        document.querySelectorAll('.modal-close, .modal-close-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                closeModal(e.target.closest('.modal'));
+            });
+        });
+
         // Fechar modal ao clicar fora
         window.addEventListener('click', (e) => {
-            if (e.target === clienteModal) {
-                clienteModal.classList.remove('active');
+            if (e.target.classList.contains('modal')) {
+                closeModal(e.target);
             }
         });
-        
-        // Função para gerar PDF (simulada)
-        document.querySelectorAll('.fa-file-pdf').forEach(icon => {
-            icon.addEventListener('click', function() {
-                alert('Funcionalidade de exportação para PDF será implementada aqui!');
-                // Em um sistema real, aqui seria implementada a lógica para gerar o PDF
-                // usando bibliotecas como jsPDF e html2canvas
+
+        // --- FUNÇÃO DE RENDERIZAÇÃO GERAL ---
+
+        function renderAll() {
+            renderClientes();
+            renderProfissionais();
+            renderFornecedores();
+            renderOrcamentos();
+            renderContratos();
+            renderEventos(); // Isso renderiza ambas as tabelas de eventos
+            renderEquipamentos();
+            renderDashboard();
+            loadSettingsView();
+        }
+
+        // --- FUNÇÕES DE RENDERIZAÇÃO DE TABELA (com estado vazio) ---
+
+        function getEmptyState(message) {
+            return `<tr><td colspan="100%"><div class="empty-state"><i class="fas fa-box-open"></i><p>${message}</p></div></td></tr>`;
+        }
+
+        function renderClientes() {
+            const tbody = document.querySelector('#clientesTable tbody');
+            tbody.innerHTML = '';
+            if (db.clientes.length === 0) {
+                tbody.innerHTML = getEmptyState('Nenhum cliente cadastrado.');
+                return;
+            }
+            db.clientes.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${c.nome}</td>
+                    <td>${c.email}</td>
+                    <td>${c.telefone}</td>
+                    <td>${c.tipo}</td>
+                    <td>${db.eventos.filter(e => e.clienteId === c.id).length}</td>
+                    <td class="actions">
+                        <button class="action-btn edit" data-id="${c.id}" data-type="cliente"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete" data-id="${c.id}" data-type="cliente"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
             });
+        }
+
+        function renderProfissionais() {
+            const tbody = document.querySelector('#profissionaisTable tbody');
+            tbody.innerHTML = '';
+            if (db.profissionais.length === 0) {
+                tbody.innerHTML = getEmptyState('Nenhum profissional cadastrado.');
+                return;
+            }
+            db.profissionais.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${p.nome}</td>
+                    <td>${p.especialidade}</td>
+                    <td>${p.email}</td>
+                    <td>${p.telefone}</td>
+                    <td><span class="status ${p.disponibilidade}">${p.disponibilidade}</span></td>
+                    <td class="actions">
+                        <button class="action-btn edit" data-id="${p.id}" data-type="profissional"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete" data-id="${p.id}" data-type="profissional"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderFornecedores() {
+            const tbody = document.querySelector('#fornecedoresTable tbody');
+            tbody.innerHTML = '';
+            if (db.fornecedores.length === 0) {
+                tbody.innerHTML = getEmptyState('Nenhum fornecedor cadastrado.');
+                return;
+            }
+            db.fornecedores.forEach(f => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${f.empresa}</td>
+                    <td>${f.servico}</td>
+                    <td>${f.contato}</td>
+                    <td>${f.telefone}</td>
+                    <td>${f.avaliacao}</td>
+                    <td class="actions">
+                        <button class="action-btn edit" data-id="${f.id}" data-type="fornecedor"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete" data-id="${f.id}" data-type="fornecedor"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderOrcamentos() {
+            const tbody = document.querySelector('#orcamentosTable tbody');
+            tbody.innerHTML = '';
+            if (db.orcamentos.length === 0) {
+                tbody.innerHTML = getEmptyState('Nenhum orçamento cadastrado.');
+                return;
+            }
+            db.orcamentos.forEach(o => {
+                const cliente = db.clientes.find(c => c.id === o.clienteId) || { nome: 'N/A' };
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${o.numero}</td>
+                    <td>${cliente.nome}</td>
+                    <td>${o.evento}</td>
+                    <td>${formatDateBR(o.data)}</td>
+                    <td>${formatCurrency(o.valor)}</td>
+                    <td><span class="status ${o.status}">${o.status}</span></td>
+                    <td class="actions">
+                        <button class="action-btn edit" data-id="${o.id}" data-type="orcamento"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn pdf" data-id="${o.id}" data-type="orcamento"><i class="fas fa-file-pdf"></i></button>
+                        <button class="action-btn delete" data-id="${o.id}" data-type="orcamento"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderContratos() {
+            const tbody = document.querySelector('#contratosTable tbody');
+            tbody.innerHTML = '';
+            if (db.contratos.length === 0) {
+                tbody.innerHTML = getEmptyState('Nenhum contrato cadastrado.');
+                return;
+            }
+            db.contratos.forEach(c => {
+                const cliente = db.clientes.find(cl => cl.id === c.clienteId) || { nome: 'N/A' };
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${c.numero}</td>
+                    <td>${cliente.nome}</td>
+                    <td>${c.evento}</td>
+                    <td>${formatDateBR(c.data)}</td>
+                    <td>${formatDateBR(c.vencimento)}</td>
+                    <td><span class="status ${c.status}">${c.status}</span></td>
+                    <td class="actions">
+                        <button class="action-btn edit" data-id="${c.id}" data-type="contrato"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn pdf" data-id="${c.id}" data-type="contrato"><i class="fas fa-file-pdf"></i></button>
+                        <button class="action-btn delete" data-id="${c.id}" data-type="contrato"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderEventos() {
+            const tbodyA = document.querySelector('#eventosTable tbody'); // Dashboard
+            const tbodyB = document.querySelector('#todosEventosTable tbody'); // Aba Eventos
+            tbodyA.innerHTML = '';
+            tbodyB.innerHTML = '';
+
+            if (db.eventos.length === 0) {
+                const emptyMsg = getEmptyState('Nenhum evento cadastrado.');
+                tbodyA.innerHTML = emptyMsg;
+                tbodyB.innerHTML = emptyMsg;
+                return;
+            }
+
+            db.eventos.forEach(e => {
+                const cliente = db.clientes.find(cl => cl.id === e.clienteId) || { nome: 'N/A' };
+                const trHTML = `
+                    <td>${e.nome}</td>
+                    <td>${cliente.nome}</td>
+                    <td>${formatDateBR(e.data)}</td>
+                    <td>${e.local}</td>
+                    <td>${formatCurrency(e.orcamento)}</td>
+                    <td><span class="status ${e.status}">${e.status}</span></td>
+                    <td class="actions">
+                        <button class="action-btn edit" data-id="${e.id}" data-type="evento"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn pdf" data-id="${e.id}" data-type="evento"><i class="fas fa-file-pdf"></i></button>
+                        <button class="action-btn delete" data-id="${e.id}" data-type="evento"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                // Insere nas duas tabelas
+                tbodyA.innerHTML += `<tr data-id="${e.id}">${trHTML}</tr>`;
+                tbodyB.innerHTML += `<tr data-id="${e.id}">${trHTML}</tr>`;
+            });
+        }
+
+        function renderEquipamentos() {
+            const tbody = document.querySelector('#equipamentosTable tbody');
+            tbody.innerHTML = '';
+             if (db.equipamentos.length === 0) {
+                tbody.innerHTML = getEmptyState('Nenhum equipamento cadastrado.');
+                return;
+            }
+            db.equipamentos.forEach(eq => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${eq.nome}</td>
+                    <td>${eq.categoria}</td>
+                    <td>${eq.quantidade}</td>
+                    <td>${eq.disponivel}</td>
+                    <td><span class="status ${eq.estado}">${eq.estado}</span></td>
+                    <td class="actions">
+                        <button class="action-btn edit" data-id="${eq.id}" data-type="equipamento"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete" data-id="${eq.id}" data-type="equipamento"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderDashboard() {
+            document.getElementById('dashEventosAtivos').textContent = db.eventos.filter(e => e.status === 'Confirmado' || e.status === 'Pendente').length;
+            document.getElementById('dashOrcamentosPendentes').textContent = db.orcamentos.filter(o => o.status === 'Pendente').length;
+            document.getElementById('dashClientesAtivos').textContent = db.clientes.length;
+            document.getElementById('dashProfissionais').textContent = db.profissionais.length;
+        }
+
+        // --- POPULAR SELECTS ---
+        function populateClienteSelects() {
+            const selects = document.querySelectorAll('#orcamentoCliente, #contratoCliente, #eventoCliente');
+            selects.forEach(select => {
+                const currentVal = select.value;
+                select.innerHTML = '<option value="">Selecione um cliente</option>';
+                db.clientes.forEach(c => {
+                    select.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
+                });
+                select.value = currentVal;
+            });
+        }
+
+        // --- LÓGICA DE FORMULÁRIOS (CRUD) ---
+
+        // Salvar Cliente
+        document.getElementById('saveClienteBtn').addEventListener('click', () => {
+            const id = document.getElementById('clienteId').value;
+            const nome = document.getElementById('clienteNome').value;
+            const email = document.getElementById('clienteEmail').value;
+            
+            if (!nome || !email) {
+                alert('Nome e Email são obrigatórios.');
+                return;
+            }
+
+            if (id) { // Editar
+                const index = db.clientes.findIndex(c => c.id == id);
+                if (index > -1) {
+                    db.clientes[index] = {
+                        ...db.clientes[index],
+                        nome,
+                        tipo: document.getElementById('clienteTipo').value,
+                        email,
+                        telefone: document.getElementById('clienteTelefone').value,
+                        endereco: document.getElementById('clienteEndereco').value
+                    };
+                }
+            } else { // Criar
+                const newCliente = {
+                    id: Date.now(),
+                    nome,
+                    tipo: document.getElementById('clienteTipo').value,
+                    email,
+                    telefone: document.getElementById('clienteTelefone').value,
+                    endereco: document.getElementById('clienteEndereco').value
+                };
+                db.clientes.push(newCliente);
+            }
+            
+            saveDB();
+            renderClientes();
+            renderDashboard();
+            closeModal(document.getElementById('clienteModal'));
         });
+
+        // Salvar Profissional
+        document.getElementById('saveProfissionalBtn').addEventListener('click', () => {
+            const id = document.getElementById('profissionalId').value;
+            const nome = document.getElementById('profissionalNome').value;
+            
+            if (!nome) {
+                alert('Nome é obrigatório.');
+                return;
+            }
+
+            const data = {
+                nome,
+                especialidade: document.getElementById('profissionalEspecialidade').value,
+                disponibilidade: document.getElementById('profissionalDisponibilidade').value,
+                email: document.getElementById('profissionalEmail').value,
+                telefone: document.getElementById('profissionalTelefone').value
+            };
+
+            if (id) {
+                const index = db.profissionais.findIndex(p => p.id == id);
+                db.profissionais[index] = { ...db.profissionais[index], ...data };
+            } else {
+                db.profissionais.push({ id: Date.now(), ...data });
+            }
+            
+            saveDB();
+            renderProfissionais();
+            renderDashboard();
+            closeModal(document.getElementById('profissionalModal'));
+        });
+
+        // Salvar Fornecedor
+        document.getElementById('saveFornecedorBtn').addEventListener('click', () => {
+            const id = document.getElementById('fornecedorId').value;
+            const empresa = document.getElementById('fornecedorEmpresa').value;
+            
+            if (!empresa) {
+                alert('Nome da Empresa é obrigatório.');
+                return;
+            }
+
+            const data = {
+                empresa,
+                servico: document.getElementById('fornecedorServico').value,
+                contato: document.getElementById('fornecedorContato').value,
+                telefone: document.getElementById('fornecedorTelefone').value,
+                avaliacao: document.getElementById('fornecedorAvaliacao').value
+            };
+
+            if (id) {
+                const index = db.fornecedores.findIndex(f => f.id == id);
+                db.fornecedores[index] = { ...db.fornecedores[index], ...data };
+            } else {
+                db.fornecedores.push({ id: Date.now(), ...data });
+            }
+            
+            saveDB();
+            renderFornecedores();
+            closeModal(document.getElementById('fornecedorModal'));
+        });
+
+        // Salvar Orçamento
+        document.getElementById('saveOrcamentoBtn').addEventListener('click', () => {
+            const id = document.getElementById('orcamentoId').value;
+            const numero = document.getElementById('orcamentoNumero').value;
+            
+            if (!numero) {
+                alert('Nº do Orçamento é obrigatório.');
+                return;
+            }
+
+            const data = {
+                numero,
+                clienteId: document.getElementById('orcamentoCliente').value,
+                evento: document.getElementById('orcamentoEvento').value,
+                data: document.getElementById('orcamentoData').value,
+                valor: parseFloat(document.getElementById('orcamentoValor').value),
+                status: document.getElementById('orcamentoStatus').value
+            };
+
+            if (id) {
+                const index = db.orcamentos.findIndex(o => o.id == id);
+                db.orcamentos[index] = { ...db.orcamentos[index], ...data };
+            } else {
+                db.orcamentos.push({ id: Date.now(), ...data });
+            }
+            
+            saveDB();
+            renderOrcamentos();
+            renderDashboard();
+            closeModal(document.getElementById('orcamentoModal'));
+        });
+
+        // Salvar Contrato
+        document.getElementById('saveContratoBtn').addEventListener('click', () => {
+            const id = document.getElementById('contratoId').value;
+            const numero = document.getElementById('contratoNumero').value;
+            
+            if (!numero) {
+                alert('Nº do Contrato é obrigatório.');
+                return;
+            }
+
+            const data = {
+                numero,
+                clienteId: document.getElementById('contratoCliente').value,
+                evento: document.getElementById('contratoEvento').value,
+                data: document.getElementById('contratoData').value,
+                vencimento: document.getElementById('contratoVencimento').value,
+                status: document.getElementById('contratoStatus').value
+            };
+
+            if (id) {
+                const index = db.contratos.findIndex(c => c.id == id);
+                db.contratos[index] = { ...db.contratos[index], ...data };
+            } else {
+                db.contratos.push({ id: Date.now(), ...data });
+            }
+            
+            saveDB();
+            renderContratos();
+            closeModal(document.getElementById('contratoModal'));
+        });
+
+        // Salvar Evento
+        document.getElementById('saveEventoBtn').addEventListener('click', () => {
+            const id = document.getElementById('eventoId').value;
+            const nome = document.getElementById('eventoNome').value;
+            
+            if (!nome) {
+                alert('Nome do Evento é obrigatório.');
+                return;
+            }
+
+            const data = {
+                nome,
+                clienteId: document.getElementById('eventoCliente').value,
+                data: document.getElementById('eventoData').value,
+                local: document.getElementById('eventoLocal').value,
+                orcamento: parseFloat(document.getElementById('eventoOrcamento').value),
+                status: document.getElementById('eventoStatus').value
+            };
+
+            if (id) {
+                const index = db.eventos.findIndex(e => e.id == id);
+                db.eventos[index] = { ...db.eventos[index], ...data };
+            } else {
+                db.eventos.push({ id: Date.now(), ...data });
+            }
+            
+            saveDB();
+            renderEventos();
+            renderDashboard(); // Atualiza contagem de eventos
+            renderClientes(); // Atualiza contagem de eventos por cliente
+            closeModal(document.getElementById('eventoModal'));
+        });
+
+        // Salvar Equipamento
+        document.getElementById('saveEquipamentoBtn').addEventListener('click', () => {
+            const id = document.getElementById('equipamentoId').value;
+            const nome = document.getElementById('equipamentoNome').value;
+            
+            if (!nome) {
+                alert('Nome do Equipamento é obrigatório.');
+                return;
+            }
+
+            const data = {
+                nome,
+                categoria: document.getElementById('equipamentoCategoria').value,
+                quantidade: parseInt(document.getElementById('equipamentoQuantidade').value),
+                disponivel: parseInt(document.getElementById('equipamentoDisponivel').value),
+                estado: document.getElementById('equipamentoEstado').value
+            };
+
+            if (id) {
+                const index = db.equipamentos.findIndex(eq => eq.id == id);
+                db.equipamentos[index] = { ...db.equipamentos[index], ...data };
+            } else {
+                db.equipamentos.push({ id: Date.now(), ...data });
+            }
+            
+            saveDB();
+            renderEquipamentos();
+            closeModal(document.getElementById('equipamentoModal'));
+        });
+
+
+        // --- LÓGICA DE EDIÇÃO E EXCLUSÃO (Event Delegation) ---
+
+        document.querySelector('main').addEventListener('click', (e) => {
+            const btn = e.target.closest('.action-btn');
+            if (!btn) return;
+
+            const id = btn.dataset.id;
+            const type = btn.dataset.type;
+
+            // Excluir
+            if (btn.classList.contains('delete')) {
+                if (confirm(`Tem certeza que deseja excluir este item (${type})?`)) {
+                    db[type + 's'] = db[type + 's'].filter(item => item.id != id);
+                    saveDB();
+                    renderAll();
+                }
+            }
+
+            // Editar
+            if (btn.classList.contains('edit')) {
+                const item = db[type + 's'].find(i => i.id == id);
+                if (!item) return;
+
+                const modalId = `${type}Modal`;
+                
+                // Popula o formulário
+                Object.keys(item).forEach(key => {
+                    const input = document.getElementById(`${type}${capitalize(key)}`);
+                    if (input) {
+                        input.value = item[key];
+                    }
+                });
+                
+                // Salva o ID no campo oculto
+                document.getElementById(`${type}Id`).value = id;
+                // Muda o título
+                document.getElementById(`${type}ModalTitle`).textContent = `Editar ${capitalize(type)}`;
+                
+                // Popula selects de cliente se necessário
+                if (modalId === 'orcamentoModal' || modalId === 'contratoModal' || modalId === 'eventoModal') {
+                    populateClienteSelects();
+                    // Garante que o valor correto do select seja selecionado
+                    document.getElementById(`${type}Cliente`).value = item.clienteId;
+                }
+
+                openModal(modalId);
+            }
+
+            // PDF
+            if (btn.classList.contains('pdf')) {
+                const item = db[type + 's'].find(i => i.id == id);
+                if (item) {
+                    generatePDF(item, type);
+                }
+            }
+        });
+
+
+        // --- LÓGICA DE PDF ---
+        function generatePDF(item, type) {
+            const doc = new jsPDF();
+            doc.setFontSize(18);
+            doc.text(`Detalhes - ${capitalize(type)}`, 14, 20);
+            doc.setFontSize(12);
+            
+            let y = 30;
+            
+            // Adiciona dados da empresa (das configurações)
+            if(db.settings.nome) {
+                doc.setFontSize(10);
+                doc.text(db.settings.nome, 14, y);
+                y += 5;
+                if(db.settings.contato) doc.text(db.settings.contato, 14, y); y += 5;
+                if(db.settings.telefone) doc.text(db.settings.telefone, 14, y); y += 5;
+                y += 5; // Espaço
+            }
+
+            doc.setFontSize(12);
+
+            // Adiciona dados do item
+            Object.keys(item).forEach(key => {
+                if (key === 'id') return;
+
+                let value = item[key];
+                
+                // Tenta buscar nome do cliente
+                if (key === 'clienteId') {
+                    key = 'Cliente';
+                    const cliente = db.clientes.find(c => c.id == value);
+                    value = cliente ? cliente.nome : 'N/A';
+                }
+                
+                // Formata
+                if (key === 'data' || key === 'vencimento') value = formatDateBR(value);
+                if (key === 'valor' || key === 'orcamento') value = formatCurrency(value);
+
+                doc.text(`${capitalize(key)}: ${value}`, 14, y);
+                y += 7;
+            });
+            
+            doc.save(`${type}_${item.id}.pdf`);
+        }
+
+        // --- LÓGICA DE CONFIGURAÇÕES ---
+
+        const logoUploadInput = document.getElementById('logoUploadInput');
+        const logoPreview = document.getElementById('logoPreview');
+        const headerLogo = document.getElementById('headerLogo');
+        const headerIcon = document.getElementById('headerIcon');
         
-        // Simulação de dados para o dashboard
-        function atualizarDashboard() {
-            // Em um sistema real, aqui seria feita uma requisição para buscar dados atualizados
-            console.log('Atualizando dados do dashboard...');
+        // Salvar Configurações
+        document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+            db.settings.nome = document.getElementById('empresaNome').value;
+            db.settings.contato = document.getElementById('empresaContato').value;
+            db.settings.telefone = document.getElementById('empresaTelefone').value;
+            db.settings.endereco = document.getElementById('empresaEndereco').value;
+            
+            saveDB();
+            loadSettingsView(); // Atualiza o header
+            alert('Configurações salvas com sucesso!');
+        });
+
+        // Carregar Configurações na Visão
+        function loadSettingsView() {
+            const settings = db.settings;
+            document.getElementById('empresaNome').value = settings.nome;
+            document.getElementById('empresaContato').value = settings.contato;
+            document.getElementById('empresaTelefone').value = settings.telefone;
+            document.getElementById('empresaEndereco').value = settings.endereco;
+            
+            // Atualiza o logo
+            if (settings.logo) {
+                logoPreview.src = settings.logo;
+                headerLogo.src = settings.logo;
+                headerLogo.style.display = 'block';
+                headerIcon.style.display = 'none';
+            } else {
+                logoPreview.src = '';
+                headerLogo.style.display = 'none';
+                headerIcon.style.display = 'block';
+            }
+
+            // Atualiza nome da empresa no header
+            document.querySelector('.logo h1').textContent = settings.nome || 'EventPro';
+        }
+
+        // Upload do Logo
+        logoUploadInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const dataUrl = event.target.result;
+                    db.settings.logo = dataUrl;
+                    saveDB();
+                    loadSettingsView();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Backup
+        document.getElementById('backupBtn').addEventListener('click', () => {
+            const dataStr = JSON.stringify(db, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `eventpro_backup_${new Date().toISOString().slice(0,10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        });
+
+        // Restaurar
+        document.getElementById('restoreBtn').addEventListener('click', () => {
+            const fileInput = document.getElementById('restoreFile');
+            if (fileInput.files.length === 0) {
+                alert('Por favor, selecione um arquivo de backup.');
+                return;
+            }
+            
+            if (!confirm('Isso substituirá todos os dados atuais. Deseja continuar?')) {
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                try {
+                    const importedDB = JSON.parse(e.target.result);
+                    // Validação simples
+                    if (importedDB.settings && importedDB.clientes) {
+                        localStorage.setItem('eventProDB', JSON.stringify(importedDB));
+                        loadDB();
+                        renderAll();
+                        alert('Backup restaurado com sucesso!');
+                    } else {
+                        alert('Arquivo de backup inválido.');
+                    }
+                } catch (error) {
+                    alert('Erro ao ler o arquivo: ' + error.message);
+                }
+            };
+            
+            reader.readAsText(file);
+        });
+
+        // Limpar Sistema
+        document.getElementById('clearSystemBtn').addEventListener('click', () => {
+            if (confirm('ATENÇÃO! Isso apagará TODOS os dados do sistema (clientes, eventos, configurações, etc.).\n\nEsta ação é irreversível.\n\nDeseja continuar?')) {
+                localStorage.removeItem('eventProDB');
+                loadDB(); // Carrega o DB padrão
+                renderAll();
+                alert('Sistema limpo com sucesso.');
+            }
+        });
+
+
+        // --- FUNÇÕES UTILITÁRIAS ---
+        function capitalize(s) {
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        }
+
+        function formatDateBR(dateString) {
+            if (!dateString) return 'N/A';
+            const [year, month, day] = dateString.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        function formatCurrency(value) {
+            if (value === null || value === undefined) return 'R$ 0,00';
+            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
         
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            atualizarDashboard();
-        });
+        // --- CARGA INICIAL ---
+        loadDB();
+        renderAll();
+    });
     </script>
 </body>
 </html>
