@@ -327,7 +327,7 @@
             color: #155724;
         }
         
-        .status.completed, .status.Realizado {
+        .status.completed, .status.Realizado, .status.Concluído {
             background-color: #d1ecf1;
             color: #0c5460;
         }
@@ -405,7 +405,18 @@
             transition: border 0.3s ease;
             background-color: white;
         }
+
+        .form-control[readonly] {
+            background-color: #f5f7fb;
+            color: var(--gray);
+            cursor: not-allowed;
+        }
         
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
         .form-control:focus, .form-select:focus {
             border-color: var(--primary);
             outline: none;
@@ -442,7 +453,7 @@
             background: white;
             border-radius: 10px;
             width: 90%;
-            max-width: 600px;
+            max-width: 700px; /* Modal maior para orçamento */
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -483,6 +494,57 @@
             justify-content: flex-end;
             gap: 10px;
             background-color: #f8f9fa;
+        }
+
+        /* Orçamento Itens */
+        fieldset {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        legend {
+            padding: 0 10px;
+            font-weight: 500;
+            color: var(--primary);
+        }
+        .orcamento-item-row {
+            display: grid;
+            grid-template-columns: 2fr 3fr 1fr 1.5fr 0.5fr;
+            gap: 10px;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .orcamento-item-row label {
+            font-size: 0.8rem;
+            margin-bottom: 3px;
+        }
+        .orcamento-item-row .form-control {
+            padding: 8px 10px;
+        }
+        .orcamento-item-row .btn-danger {
+            padding: 8px;
+            margin-top: 20px; /* Alinha com inputs */
+            height: 38px;
+        }
+        .orcamento-totais {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .orcamento-totais-display {
+            background-color: #f5f7fb;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: right;
+        }
+        .orcamento-totais-display p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        .orcamento-totais-display h4 {
+            font-size: 1.2rem;
+            color: var(--primary);
         }
         
         /* Configurações */
@@ -587,12 +649,17 @@
             position: absolute;
             left: -9999px;
             width: 210mm; /* A4 width */
-            padding: 20mm;
             background: white;
             color: #333;
             font-family: Arial, sans-serif;
             font-size: 12px;
             line-height: 1.5;
+        }
+        .pdf-page {
+            padding: 20mm;
+            min-height: 297mm; /* A4 height */
+            page-break-after: always;
+            box-sizing: border-box;
         }
         #pdfHeader {
             display: flex;
@@ -620,6 +687,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 11px;
+            margin-top: 20px;
         }
         #pdfBody th, #pdfBody td {
             border: 1px solid #ddd;
@@ -629,8 +697,41 @@
         #pdfBody th {
             background-color: #f8f8f8;
             font-weight: bold;
-            width: 30%;
         }
+        /* Tabela de orçamento no PDF */
+        .pdf-orcamento-table th {
+            width: auto;
+        }
+        .pdf-orcamento-table th:nth-child(1) { width: 30%; }
+        .pdf-orcamento-table th:nth-child(2) { width: 15%; }
+        .pdf-orcamento-table th:nth-child(3) { width: 15%; }
+        .pdf-orcamento-table th:nth-child(4) { width: 20%; }
+        .pdf-orcamento-table td { font-size: 10px; }
+        .pdf-totais-table {
+            width: 50%;
+            margin-left: auto;
+            margin-top: 15px;
+        }
+        .pdf-totais-table td:first-child { font-weight: bold; }
+        .pdf-totais-table td:last-child { text-align: right; }
+
+        .pdf-section-title {
+            font-size: 16px;
+            color: var(--primary);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        .pdf-clausulas {
+            font-size: 10px;
+            white-space: pre-wrap; /* Mantém formatação */
+            word-wrap: break-word;
+            padding: 10px;
+            border: 1px solid #eee;
+            background: #fdfdfd;
+        }
+
         #pdfFooter {
             margin-top: 30px;
             padding-top: 15px;
@@ -658,6 +759,11 @@
             .nav-tabs li {
                 min-width: 100px;
             }
+            .orcamento-item-row {
+                grid-template-columns: 1fr 1fr; /* Simplifica grid */
+            }
+            .orcamento-item-row > div:nth-child(2) { grid-column: span 2; } /* Descrição ocupa linha toda */
+            .orcamento-item-row > div:nth-child(5) { grid-column: 2 / 3; } /* Botão ao lado do preço */
         }
         
         @media (max-width: 576px) {
@@ -859,7 +965,7 @@
                             <th>Cliente</th>
                             <th>Evento</th>
                             <th>Data</th>
-                            <th>Valor</th>
+                            <th>Valor Total</th>
                             <th>Status</th>
                             <th>Ações</th>
                         </tr>
@@ -883,8 +989,8 @@
                             <th>Nº</th>
                             <th>Cliente</th>
                             <th>Evento</th>
-                            <th>Data</th>
-                            <th>Vencimento</th>
+                            <th>Valor</th>
+                            <th>Data Assinatura</th>
                             <th>Status</th>
                             <th>Ações</th>
                         </tr>
@@ -1019,6 +1125,10 @@
                             <label for="empresaEndereco">Endereço</label>
                             <input type="text" id="empresaEndereco" class="form-control" placeholder="Rua das Eventualidades, 123">
                         </div>
+                        <div class="form-group">
+                            <label for="empresaSobre">Sobre Nós (para propostas)</label>
+                            <textarea id="empresaSobre" class="form-control" placeholder="Apresente sua empresa aqui. Inclua seu histórico, missão, visão..."></textarea>
+                        </div>
                     </form>
                 </div>
 
@@ -1053,7 +1163,7 @@
     </main>
     
     <div class="modal" id="clienteModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h3 id="clienteModalTitle">Adicionar Cliente</h3>
                 <button class="modal-close">&times;</button>
@@ -1063,7 +1173,7 @@
                     <input type="hidden" id="clienteId">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="clienteNome">Nome Completo</label>
+                            <label for="clienteNome">Nome Completo / Razão Social</label>
                             <input type="text" id="clienteNome" class="form-control" required>
                         </div>
                         <div class="form-group">
@@ -1086,6 +1196,10 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="clienteDocumento">CPF / CNPJ</label>
+                        <input type="text" id="clienteDocumento" class="form-control">
+                    </div>
+                    <div class="form-group">
                         <label for="clienteEndereco">Endereço</label>
                         <input type="text" id="clienteEndereco" class="form-control">
                     </div>
@@ -1099,7 +1213,7 @@
     </div>
 
     <div class="modal" id="profissionalModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h3 id="profissionalModalTitle">Adicionar Profissional</h3>
                 <button class="modal-close">&times;</button>
@@ -1144,7 +1258,7 @@
     </div>
 
     <div class="modal" id="fornecedorModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h3 id="fornecedorModalTitle">Adicionar Fornecedor</h3>
                 <button class="modal-close">&times;</button>
@@ -1198,30 +1312,68 @@
             <div class="modal-body">
                 <form id="orcamentoForm">
                     <input type="hidden" id="orcamentoId">
-                    <div class="form-group">
-                        <label for="orcamentoNumero">Nº Orçamento</label>
-                        <input type="text" id="orcamentoNumero" class="form-control" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="orcamentoCliente">Cliente</label>
-                            <select id="orcamentoCliente" class="form-select" required></select>
+                    
+                    <fieldset>
+                        <legend>Informações Gerais</legend>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="orcamentoNumero">Nº Orçamento</label>
+                                <input type="text" id="orcamentoNumero" class="form-control" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="orcamentoData">Data</label>
+                                <input type="date" id="orcamentoData" class="form-control" required>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="orcamentoEvento">Evento</label>
-                            <input type="text" id="orcamentoEvento" class="form-control" required>
+                        <div class="form-row">
+                             <div class="form-group">
+                                <label for="orcamentoCliente">Cliente</label>
+                                <select id="orcamentoCliente" class="form-select" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="orcamentoEvento">Evento</label>
+                                <input type="text" id="orcamentoEvento" class="form-control" required>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="orcamentoData">Data</label>
-                            <input type="date" id="orcamentoData" class="form-control" required>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Itens do Orçamento</legend>
+                        <div id="orcamentoItensContainer">
+                            </div>
+                        <button type="button" class="btn btn-success" id="addOrcamentoItemBtn" style="margin-top: 10px;">
+                            <i class="fas fa-plus"></i> Adicionar Item
+                        </button>
+                    </fieldset>
+
+                    <fieldset>
+                         <legend>Escopo e Detalhes</legend>
+                         <div class="form-group" style="margin-bottom: 0;">
+                            <label for="orcamentoNotas">Escopo do Trabalho / Previsão de Entrega / Opções de Pagamento</label>
+                            <textarea id="orcamentoNotas" class="form-control" rows="4"></textarea>
                         </div>
-                         <div class="form-group">
-                            <label for="orcamentoValor">Valor (R$)</label>
-                            <input type="number" id="orcamentoValor" class="form-control" step="0.01" required>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Valores</legend>
+                        <div class="orcamento-totais">
+                            <div class="form-group">
+                                <label for="orcamentoImposto">Impostos/Taxas (%)</label>
+                                <input type="number" id="orcamentoImposto" class="form-control" value="0" step="0.1">
+                                
+                                <label for="orcamentoDesconto" style="margin-top: 10px;">Desconto (R$)</label>
+                                <input type="number" id="orcamentoDesconto" class="form-control" value="0" step="0.01">
+                            </div>
+                            <div class="orcamento-totais-display">
+                                <p>Subtotal: <strong id="orcamentoSubtotalDisplay">R$ 0,00</strong></p>
+                                <p>Taxas/Impostos: <strong id="orcamentoImpostoDisplay">R$ 0,00</strong></p>
+                                <p>Desconto: <strong id="orcamentoDescontoDisplay">- R$ 0,00</strong></p>
+                                <hr>
+                                <h4>Total: <strong id="orcamentoTotalDisplay">R$ 0,00</strong></h4>
+                            </div>
                         </div>
-                    </div>
+                    </fieldset>
+                    
                     <div class="form-group">
                         <label for="orcamentoStatus">Status</label>
                         <select id="orcamentoStatus" class="form-select" required>
@@ -1242,45 +1394,60 @@
     <div class="modal" id="contratoModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="contratoModalTitle">Adicionar Contrato</h3>
+                <h3 id="contratoModalTitle">Gerar Contrato</h3>
                 <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="contratoForm">
                     <input type="hidden" id="contratoId">
-                    <div class="form-group">
-                        <label for="contratoNumero">Nº Contrato</label>
-                        <input type="text" id="contratoNumero" class="form-control" required>
-                    </div>
-                    <div class="form-row">
+                    <input type="hidden" id="contratoValor">
+                    
+                    <fieldset>
+                        <legend>Informações do Contrato</legend>
                         <div class="form-group">
-                            <label for="contratoCliente">Cliente</label>
-                            <select id="contratoCliente" class="form-select" required></select>
+                            <label for="contratoOrcamentoId">Selecione o Orçamento Aprovado</label>
+                            <select id="contratoOrcamentoId" class="form-select" required>
+                                <option value="">-- Selecione um orçamento --</option>
+                            </select>
                         </div>
-                        <div class="form-group">
-                            <label for="contratoEvento">Evento</label>
-                            <input type="text" id="contratoEvento" class="form-control" required>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contratoNumero">Nº Contrato</label>
+                                <input type="text" id="contratoNumero" class="form-control" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="contratoData">Data Assinatura</label>
+                                <input type="date" id="contratoData" class="form-control" required>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="contratoData">Data Assinatura</label>
-                            <input type="date" id="contratoData" class="form-control" required>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contratoClienteNome">Cliente</label>
+                                <input type="text" id="contratoClienteNome" class="form-control" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="contratoEvento">Evento</label>
+                                <input type="text" id="contratoEvento" class="form-control" readonly>
+                            </div>
                         </div>
                          <div class="form-group">
-                            <label for="contratoVencimento">Data Vencimento</label>
-                            <input type="date" id="contratoVencimento" class="form-control" required>
+                            <label for="contratoStatus">Status</label>
+                            <select id="contratoStatus" class="form-select" required>
+                                <option value="Pendente">Pendente</option>
+                                <option value="Ativo">Ativo</option>
+                                <option value="Concluído">Concluído</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="contratoStatus">Status</label>
-                        <select id="contratoStatus" class="form-select" required>
-                            <option value="Pendente">Pendente</option>
-                            <option value="Ativo">Ativo</option>
-                            <option value="Concluído">Concluído</option>
-                            <option value="Cancelado">Cancelado</option>
-                        </select>
-                    </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Cláusulas do Contrato</legend>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="contratoClausulas">Cláusulas (geradas automaticamente)</label>
+                            <textarea id="contratoClausulas" class="form-control" rows="10"></textarea>
+                        </div>
+                    </fieldset>
                 </form>
             </div>
             <div class="modal-footer">
@@ -1291,7 +1458,7 @@
     </div>
 
     <div class="modal" id="eventoModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h3 id="eventoModalTitle">Adicionar Evento</h3>
                 <button class="modal-close">&times;</button>
@@ -1342,7 +1509,7 @@
     </div>
 
     <div class="modal" id="equipamentoModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h3 id="equipamentoModalTitle">Adicionar Equipamento</h3>
                 <button class="modal-close">&times;</button>
@@ -1386,24 +1553,7 @@
     </div>
     
     <div id="pdfTemplate">
-        <div id="pdfHeader">
-            <div id="pdfLogoContainer">
-                <img id="pdfLogo" src="" alt="Logo" style="display: none;">
-            </div>
-            <div id="pdfCompanyInfo">
-                <strong id="pdfEmpresaNome"></strong><br>
-                <span id="pdfEmpresaEndereco"></span><br>
-                <span id="pdfEmpresaContato"></span><br>
-                <span id="pdfEmpresaTelefone"></span>
-            </div>
         </div>
-        <h2 id="pdfTitle"></h2>
-        <div id="pdfBody">
-            </div>
-        <div id="pdfFooter">
-            Documento gerado pelo sistema EventPro
-        </div>
-    </div>
 
 
     <script>
@@ -1424,21 +1574,25 @@
             contratos: [],
             eventos: [],
             equipamentos: [],
+            orcamentoCounter: 1, // Contador para orçamentos
             settings: {
                 logo: '',
                 nome: 'EventPro',
                 contato: '',
                 telefone: '',
-                endereco: ''
+                endereco: '',
+                sobre: '' // Novo campo 'Sobre'
             }
         };
 
         function loadDB() {
-            db = JSON.parse(localStorage.getItem('eventProDB_v2')) || defaultDB; // v2 para evitar conflito
+            db = JSON.parse(localStorage.getItem('eventProDB_v3')) || defaultDB;
+            if (!db.orcamentoCounter) db.orcamentoCounter = 1; // Garante que existe
+            if (!db.settings.sobre) db.settings.sobre = ''; // Garante que existe
         }
 
         function saveDB() {
-            localStorage.setItem('eventProDB_v2', JSON.stringify(db));
+            localStorage.setItem('eventProDB_v3', JSON.stringify(db));
         }
 
         // --- NAVEGAÇÃO ENTRE ABAS ---
@@ -1458,7 +1612,7 @@
             });
         });
 
-        // --- [NOVO] CARDS CLICÁVEIS DO DASHBOARD ---
+        // --- CARDS CLICÁVEIS DO DASHBOARD ---
         document.querySelectorAll('.card.clickable').forEach(card => {
             card.addEventListener('click', function() {
                 const target = this.getAttribute('data-target');
@@ -1474,18 +1628,34 @@
         const modals = document.querySelectorAll('.modal');
         
         function openModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
+            const modal = document.getElementById(modalId);
+            modal.classList.add('active');
+            
+            // Lógica Específica ao abrir
+            if (modalId === 'orcamentoModal' && !document.getElementById('orcamentoId').value) {
+                setupNovoOrcamento();
+            }
+            if (modalId === 'contratoModal') {
+                populateContratoOrcamentosSelect();
+            }
+            if (modalId === 'eventoModal') {
+                populateClienteSelects('#eventoCliente');
+            }
         }
 
         function closeModal(modal) {
             modal.classList.remove('active');
-            // Limpa todos os formulários dentro do modal
             modal.querySelectorAll('form').forEach(form => form.reset());
             modal.querySelectorAll('input[type="hidden"]').forEach(input => input.value = '');
+            
+            // Limpa itens dinâmicos do orçamento
+            document.getElementById('orcamentoItensContainer').innerHTML = '';
+            calcularTotaisOrcamento(); // Reseta displays de total
+            
             // Reseta títulos
             modal.querySelectorAll('.modal-header h3').forEach(title => {
                 if (title.id.includes('Title')) {
-                    title.textContent = title.textContent.replace('Editar', 'Adicionar');
+                    title.textContent = title.textContent.replace('Editar', 'Gerar').replace('Editar', 'Adicionar');
                 }
             });
         }
@@ -1494,9 +1664,9 @@
         document.querySelectorAll('.btn-show-modal').forEach(btn => {
             btn.addEventListener('click', () => {
                 const modalId = btn.getAttribute('data-modal');
-                // Popula selects de cliente antes de abrir
-                if (modalId === 'orcamentoModal' || modalId === 'contratoModal' || modalId === 'eventoModal') {
-                    populateClienteSelects();
+                // Popula selects de cliente
+                if (modalId === 'orcamentoModal' || modalId === 'eventoModal') {
+                    populateClienteSelects(`#${modalId.replace('Modal','')}Cliente`);
                 }
                 openModal(modalId);
             });
@@ -1524,14 +1694,14 @@
             renderFornecedores();
             renderOrcamentos();
             renderContratos();
-            renderEventos(); // Isso renderiza ambas as tabelas de eventos
+            renderEventos(); 
             renderEquipamentos();
             renderDashboard();
-            renderFinanceiro(); // NOVO
+            renderFinanceiro();
             loadSettingsView();
         }
 
-        // --- FUNÇÕES DE RENDERIZAÇÃO DE TABELA (com estado vazio) ---
+        // --- FUNÇÕES DE RENDERIZAÇÃO DE TABELA ---
 
         function getEmptyState(message) {
             return `<tr><td colspan="100%"><div class="empty-state"><i class="fas fa-box-open"></i><p>${message}</p></div></td></tr>`;
@@ -1625,7 +1795,7 @@
                     <td>${cliente.nome}</td>
                     <td>${o.evento}</td>
                     <td>${formatDateBR(o.data)}</td>
-                    <td>${formatCurrency(o.valor)}</td>
+                    <td>${formatCurrency(o.total)}</td>
                     <td><span class="status ${o.status}">${o.status}</span></td>
                     <td class="actions">
                         <button class="action-btn edit" data-id="${o.id}" data-type="orcamento"><i class="fas fa-edit"></i></button>
@@ -1651,8 +1821,8 @@
                     <td>${c.numero}</td>
                     <td>${cliente.nome}</td>
                     <td>${c.evento}</td>
+                    <td>${formatCurrency(c.valor)}</td>
                     <td>${formatDateBR(c.data)}</td>
-                    <td>${formatDateBR(c.vencimento)}</td>
                     <td><span class="status ${c.status}">${c.status}</span></td>
                     <td class="actions">
                         <button class="action-btn edit" data-id="${c.id}" data-type="contrato"><i class="fas fa-edit"></i></button>
@@ -1744,7 +1914,7 @@
             document.getElementById('dashProfissionais').textContent = db.profissionais.length;
         }
 
-        // --- [NOVO] PAINEL FINANCEIRO ---
+        // --- PAINEL FINANCEIRO ---
         function renderFinanceiro() {
             let totalFaturado = 0;
             let totalPendente = 0;
@@ -1753,7 +1923,7 @@
             const statusCounts = { Pendente: 0, Aprovado: 0, Recusado: 0 };
 
             db.orcamentos.forEach(orc => {
-                const valor = parseFloat(orc.valor) || 0;
+                const valor = parseFloat(orc.total) || 0;
                 if (orc.status === 'Aprovado') {
                     totalFaturado += valor;
                     if (orc.data) {
@@ -1842,16 +2012,14 @@
 
 
         // --- POPULAR SELECTS ---
-        function populateClienteSelects() {
-            const selects = document.querySelectorAll('#orcamentoCliente, #contratoCliente, #eventoCliente');
-            selects.forEach(select => {
-                const currentVal = select.value;
-                select.innerHTML = '<option value="">Selecione um cliente</option>';
-                db.clientes.forEach(c => {
-                    select.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
-                });
-                select.value = currentVal;
+        function populateClienteSelects(selector) {
+            const select = document.querySelector(selector);
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">Selecione um cliente</option>';
+            db.clientes.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
             });
+            select.value = currentVal;
         }
 
         // --- LÓGICA DE FORMULÁRIOS (CRUD) ---
@@ -1867,28 +2035,20 @@
                 return;
             }
 
-            if (id) { // Editar
+            const data = {
+                nome,
+                tipo: document.getElementById('clienteTipo').value,
+                email,
+                telefone: document.getElementById('clienteTelefone').value,
+                documento: document.getElementById('clienteDocumento').value, // Doc
+                endereco: document.getElementById('clienteEndereco').value
+            };
+
+            if (id) {
                 const index = db.clientes.findIndex(c => c.id == id);
-                if (index > -1) {
-                    db.clientes[index] = {
-                        ...db.clientes[index],
-                        nome,
-                        tipo: document.getElementById('clienteTipo').value,
-                        email,
-                        telefone: document.getElementById('clienteTelefone').value,
-                        endereco: document.getElementById('clienteEndereco').value
-                    };
-                }
-            } else { // Criar
-                const newCliente = {
-                    id: Date.now(),
-                    nome,
-                    tipo: document.getElementById('clienteTipo').value,
-                    email,
-                    telefone: document.getElementById('clienteTelefone').value,
-                    endereco: document.getElementById('clienteEndereco').value
-                };
-                db.clientes.push(newCliente);
+                db.clientes[index] = { ...db.clientes[index], ...data };
+            } else {
+                db.clientes.push({ id: Date.now(), ...data });
             }
             
             saveDB();
@@ -1899,28 +2059,19 @@
         // Salvar Profissional
         document.getElementById('saveProfissionalBtn').addEventListener('click', () => {
             const id = document.getElementById('profissionalId').value;
-            const nome = document.getElementById('profissionalNome').value;
-            
-            if (!nome) {
-                alert('Nome é obrigatório.');
-                return;
-            }
-
             const data = {
-                nome,
+                nome: document.getElementById('profissionalNome').value,
                 especialidade: document.getElementById('profissionalEspecialidade').value,
                 disponibilidade: document.getElementById('profissionalDisponibilidade').value,
                 email: document.getElementById('profissionalEmail').value,
                 telefone: document.getElementById('profissionalTelefone').value
             };
-
             if (id) {
                 const index = db.profissionais.findIndex(p => p.id == id);
                 db.profissionais[index] = { ...db.profissionais[index], ...data };
             } else {
                 db.profissionais.push({ id: Date.now(), ...data });
             }
-            
             saveDB();
             renderAll();
             closeModal(document.getElementById('profissionalModal'));
@@ -1929,81 +2080,284 @@
         // Salvar Fornecedor
         document.getElementById('saveFornecedorBtn').addEventListener('click', () => {
             const id = document.getElementById('fornecedorId').value;
-            const empresa = document.getElementById('fornecedorEmpresa').value;
-            
-            if (!empresa) {
-                alert('Nome da Empresa é obrigatório.');
-                return;
-            }
-
             const data = {
-                empresa,
+                empresa: document.getElementById('fornecedorEmpresa').value,
                 servico: document.getElementById('fornecedorServico').value,
                 contato: document.getElementById('fornecedorContato').value,
                 telefone: document.getElementById('fornecedorTelefone').value,
                 avaliacao: document.getElementById('fornecedorAvaliacao').value
             };
-
             if (id) {
                 const index = db.fornecedores.findIndex(f => f.id == id);
                 db.fornecedores[index] = { ...db.fornecedores[index], ...data };
             } else {
                 db.fornecedores.push({ id: Date.now(), ...data });
             }
-            
             saveDB();
             renderAll();
             closeModal(document.getElementById('fornecedorModal'));
         });
 
+        // --- [REFEITO] LÓGICA DE ORÇAMENTO ---
+
+        function setupNovoOrcamento() {
+            // Gera o número automático
+            const nextNumero = String(db.orcamentoCounter).padStart(4, '0');
+            document.getElementById('orcamentoNumero').value = nextNumero;
+            // Define a data de hoje
+            document.getElementById('orcamentoData').value = new Date().toISOString().slice(0, 10);
+            // Adiciona um item inicial
+            addOrcamentoItem();
+        }
+
+        function addOrcamentoItem(item = { produto: '', descricao: '', qtd: 1, precoUnit: 0 }) {
+            const container = document.getElementById('orcamentoItensContainer');
+            const div = document.createElement('div');
+            div.className = 'orcamento-item-row';
+            div.innerHTML = `
+                <div>
+                    <label>Produto/Serviço</label>
+                    <input type="text" class="form-control item-produto" value="${item.produto}" placeholder="Ex: Iluminação">
+                </div>
+                <div>
+                    <label>Descrição/Especificações</label>
+                    <input type="text" class="form-control item-descricao" value="${item.descricao}" placeholder="Ex: 10x ParLED, 2x Moving Head">
+                </div>
+                <div>
+                    <label>Qtd.</label>
+                    <input type="number" class="form-control item-qtd" value="${item.qtd}" min="1">
+                </div>
+                <div>
+                    <label>Preço Unit. (R$)</label>
+                    <input type="number" class="form-control item-preco" value="${item.precoUnit}" step="0.01">
+                </div>
+                <div>
+                    <button type="button" class="btn btn-danger btn-remover-item"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            container.appendChild(div);
+
+            // Adiciona listeners para calcular totais e remover
+            div.querySelector('.btn-remover-item').addEventListener('click', (e) => {
+                e.target.closest('.orcamento-item-row').remove();
+                calcularTotaisOrcamento();
+            });
+            div.querySelectorAll('.item-qtd, .item-preco').forEach(input => {
+                input.addEventListener('input', calcularTotaisOrcamento);
+            });
+        }
+
+        function calcularTotaisOrcamento() {
+            let subtotal = 0;
+            document.querySelectorAll('.orcamento-item-row').forEach(row => {
+                const qtd = parseFloat(row.querySelector('.item-qtd').value) || 0;
+                const preco = parseFloat(row.querySelector('.item-preco').value) || 0;
+                subtotal += qtd * preco;
+            });
+
+            const impostoPerc = parseFloat(document.getElementById('orcamentoImposto').value) || 0;
+            const descontoValor = parseFloat(document.getElementById('orcamentoDesconto').value) || 0;
+
+            const valorImposto = subtotal * (impostoPerc / 100);
+            const total = subtotal + valorImposto - descontoValor;
+
+            document.getElementById('orcamentoSubtotalDisplay').textContent = formatCurrency(subtotal);
+            document.getElementById('orcamentoImpostoDisplay').textContent = formatCurrency(valorImposto);
+            document.getElementById('orcamentoDescontoDisplay').textContent = `- ${formatCurrency(descontoValor)}`;
+            document.getElementById('orcamentoTotalDisplay').textContent = formatCurrency(total);
+
+            return { subtotal, valorImposto, descontoValor, total };
+        }
+
+        // Listeners do formulário de orçamento
+        document.getElementById('addOrcamentoItemBtn').addEventListener('click', () => addOrcamentoItem());
+        document.getElementById('orcamentoImposto').addEventListener('input', calcularTotaisOrcamento);
+        document.getElementById('orcamentoDesconto').addEventListener('input', calcularTotaisOrcamento);
+
         // Salvar Orçamento
         document.getElementById('saveOrcamentoBtn').addEventListener('click', () => {
             const id = document.getElementById('orcamentoId').value;
-            const numero = document.getElementById('orcamentoNumero').value;
+            const { subtotal, valorImposto, descontoValor, total } = calcularTotaisOrcamento();
             
-            if (!numero) {
-                alert('Nº do Orçamento é obrigatório.');
+            // Coleta itens
+            const itens = [];
+            document.querySelectorAll('.orcamento-item-row').forEach(row => {
+                itens.push({
+                    produto: row.querySelector('.item-produto').value,
+                    descricao: row.querySelector('.item-descricao').value,
+                    qtd: parseFloat(row.querySelector('.item-qtd').value) || 0,
+                    precoUnit: parseFloat(row.querySelector('.item-preco').value) || 0,
+                });
+            });
+
+            if (itens.length === 0) {
+                alert('Adicione pelo menos um item ao orçamento.');
                 return;
             }
 
             const data = {
-                numero,
+                numero: document.getElementById('orcamentoNumero').value,
                 clienteId: document.getElementById('orcamentoCliente').value,
                 evento: document.getElementById('orcamentoEvento').value,
                 data: document.getElementById('orcamentoData').value,
-                valor: parseFloat(document.getElementById('orcamentoValor').value),
-                status: document.getElementById('orcamentoStatus').value
+                status: document.getElementById('orcamentoStatus').value,
+                notas: document.getElementById('orcamentoNotas').value,
+                itens: itens,
+                impostoPerc: parseFloat(document.getElementById('orcamentoImposto').value) || 0,
+                descontoValor: parseFloat(document.getElementById('orcamentoDesconto').value) || 0,
+                subtotal,
+                total
             };
 
             if (id) {
                 const index = db.orcamentos.findIndex(o => o.id == id);
                 db.orcamentos[index] = { ...db.orcamentos[index], ...data };
             } else {
-                db.orcamentos.push({ id: Date.now(), ...data });
+                // Incrementa o contador apenas se for novo
+                data.id = Date.now();
+                db.orcamentos.push(data);
+                db.orcamentoCounter++;
             }
             
             saveDB();
-            renderAll(); // Atualiza tudo, incluindo dashboard e financeiro
+            renderAll();
             closeModal(document.getElementById('orcamentoModal'));
         });
+
+
+        // --- [REFEITO] LÓGICA DE CONTRATO ---
+
+        function populateContratoOrcamentosSelect() {
+            const select = document.getElementById('contratoOrcamentoId');
+            select.innerHTML = '<option value="">-- Selecione um orçamento --</option>';
+            
+            // Filtra orçamentos 'Aprovados' que ainda não têm contrato
+            const orcamentosAprovados = db.orcamentos.filter(o => o.status === 'Aprovado');
+            const contratosExistentes = db.contratos.map(c => c.orcamentoId);
+            
+            const orcamentosDisponiveis = orcamentosAprovados.filter(o => !contratosExistentes.includes(o.id));
+
+            if(orcamentosDisponiveis.length === 0) {
+                 select.innerHTML = '<option value="">Nenhum orçamento aprovado disponível</option>';
+                 return;
+            }
+
+            orcamentosDisponiveis.forEach(o => {
+                const cliente = db.clientes.find(c => c.id == o.clienteId) || { nome: 'N/A' };
+                select.innerHTML += `<option value="${o.id}">Nº ${o.numero} - ${cliente.nome} (${o.evento})</option>`;
+            });
+        }
+
+        document.getElementById('contratoOrcamentoId').addEventListener('change', function() {
+            const orcamentoId = this.value;
+            if (!orcamentoId) {
+                document.getElementById('contratoForm').reset();
+                return;
+            }
+
+            const orcamento = db.orcamentos.find(o => o.id == orcamentoId);
+            const cliente = db.clientes.find(c => c.id == orcamento.clienteId);
+
+            // Preenche campos
+            document.getElementById('contratoNumero').value = `CT-${orcamento.numero}`;
+            document.getElementById('contratoClienteNome').value = cliente.nome;
+            document.getElementById('contratoEvento').value = orcamento.evento;
+            document.getElementById('contratoData').value = new Date().toISOString().slice(0, 10);
+            document.getElementById('contratoValor').value = orcamento.total; // Salva oculto
+
+            // Gera cláusulas
+            document.getElementById('contratoClausulas').value = generateContratoClausulas(orcamento, cliente, db.settings);
+        });
+
+        function generateContratoClausulas(orcamento, cliente, settings) {
+            const dataHoje = new Date().toLocaleDateString('pt-BR');
+            
+            // Qualificação das Partes
+            const contratada = `CONTRATADA: ${settings.nome || '[NOME DA SUA EMPRESA]'}, com sede em ${settings.endereco || '[SEU ENDEREÇO]'}, email ${settings.contato || '[SEU EMAIL]'}, doravante denominada CONTRATADA.`;
+            
+            const contratante = `CONTRATANTE: ${cliente.nome}, ${cliente.tipo === 'Pessoa Física' ? 'CPF' : 'CNPJ'} nº ${cliente.documento || '[DOCUMENTO CLIENTE]'}, residente em ${cliente.endereco || '[ENDEREÇO CLIENTE]'}, email ${cliente.email}, doravante denominada CONTRATANTE.`;
+
+            // Detalhes dos Serviços
+            let servicosDescricao = 'Os serviços/produtos objeto deste contrato estão detalhados no Orçamento Nº ' + orcamento.numero + ', e incluem:\n';
+            orcamento.itens.forEach(item => {
+                servicosDescricao += `- ${item.produto} (${item.descricao}): ${item.qtd}x R$ ${item.precoUnit.toFixed(2)}\n`;
+            });
+            
+            return `CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EVENTOS
+Nº ${`CT-${orcamento.numero}`}
+
+Pelo presente instrumento particular, as partes abaixo qualificadas:
+
+${contratada}
+
+${contratante}
+
+Resolvem celebrar o presente Contrato de Prestação de Serviços, que se regerá pelas seguintes cláusulas e condições:
+
+CLÁUSULA PRIMEIRA - DO OBJETO
+1.1. A CONTRATADA compromete-se a prestar à CONTRATANTE os serviços para o evento "${orcamento.evento}", a ser realizado em ${formatDateBR(orcamento.data)}.
+1.2. ${servicosDescricao}
+1.3. O escopo detalhado, prazos e condições foram previamente estabelecidos na Proposta de Orçamento Nº ${orcamento.numero}, que faz parte integrante deste contrato.
+
+CLÁUSULA SEGUNDA - DO VALOR E FORMA DE PAGAMENTO
+2.1. O valor total dos serviços é de ${formatCurrency(orcamento.total)}.
+2.2. O pagamento será efetuado conforme as condições descritas no campo "Escopo e Detalhes" do orçamento:
+${orcamento.notas.includes('Pagamento') ? orcamento.notas : '[DEFINIR CONDIÇÕES DE PAGAMENTO. Ex: 50% na assinatura, 50% na data do evento.]'}
+
+CLÁUSULA TERCEIRA - DAS OBRIGAÇÕES DA CONTRATADA
+3.1. Prestar os serviços com zelo, profissionalismo e nos padrões de qualidade acordados.
+3.2. Fornecer todos os equipamentos, materiais e pessoal necessários para a execução dos serviços.
+3.3. Cumprir os prazos e cronogramas estabelecidos.
+
+CLÁUSULA QUARTA - DAS OBRIGAÇÕES DA CONTRATANTE
+4.1. Efetuar o pagamento nas datas e condições acordadas.
+4.2. Fornecer todas as informações necessárias para a execução dos serviços.
+4.3. Garantir o acesso da equipe da CONTRATADA ao local do evento.
+
+CLÁUSULA QUINTA - DO CANCELAMENTO
+5.1. Em caso de cancelamento por parte da CONTRATANTE, serão aplicadas multas proporcionais ao valor total do contrato, conforme a antecedência:
+    a) Com mais de 30 dias de antecedência: Multa de 30% do valor total.
+    b) Entre 30 e 15 dias de antecedência: Multa de 50% do valor total.
+    c) Com menos de 15 dias de antecedência: Multa de 80% do valor total.
+5.2. Em caso de cancelamento por parte da CONTRATADA, esta deverá restituir integralmente os valores pagos pela CONTRATANTE, acrescidos de multa de 20%.
+
+CLÁUSULA SEXTA - DO FORO
+6.1. Fica eleito o foro da comarca de ${settings.endereco ? settings.endereco.split(',').pop().trim() : '[SUA CIDADE]'} para dirimir quaisquer controvérsias oriundas deste contrato.
+
+E, por estarem justas e contratadas, assinam o presente instrumento em duas vias de igual teor e forma.
+
+Local, ${dataHoje}.
+
+
+_________________________________________
+${settings.nome} (CONTRATADA)
+
+_________________________________________
+${cliente.nome} (CONTRATANTE)
+`;
+        }
 
         // Salvar Contrato
         document.getElementById('saveContratoBtn').addEventListener('click', () => {
             const id = document.getElementById('contratoId').value;
-            const numero = document.getElementById('contratoNumero').value;
+            const orcamentoId = document.getElementById('contratoOrcamentoId').value;
             
-            if (!numero) {
-                alert('Nº do Contrato é obrigatório.');
+            if (!orcamentoId) {
+                alert('É necessário selecionar um orçamento aprovado.');
                 return;
             }
+            
+            const orcamento = db.orcamentos.find(o => o.id == orcamentoId);
 
             const data = {
-                numero,
-                clienteId: document.getElementById('contratoCliente').value,
+                orcamentoId: orcamento.id,
+                clienteId: orcamento.clienteId,
+                numero: document.getElementById('contratoNumero').value,
                 evento: document.getElementById('contratoEvento').value,
                 data: document.getElementById('contratoData').value,
-                vencimento: document.getElementById('contratoVencimento').value,
-                status: document.getElementById('contratoStatus').value
+                status: document.getElementById('contratoStatus').value,
+                valor: parseFloat(document.getElementById('contratoValor').value),
+                clausulas: document.getElementById('contratoClausulas').value
             };
 
             if (id) {
@@ -2018,62 +2372,45 @@
             closeModal(document.getElementById('contratoModal'));
         });
 
+
         // Salvar Evento
         document.getElementById('saveEventoBtn').addEventListener('click', () => {
             const id = document.getElementById('eventoId').value;
-            const nome = document.getElementById('eventoNome').value;
-            
-            if (!nome) {
-                alert('Nome do Evento é obrigatório.');
-                return;
-            }
-
             const data = {
-                nome,
+                nome: document.getElementById('eventoNome').value,
                 clienteId: document.getElementById('eventoCliente').value,
                 data: document.getElementById('eventoData').value,
                 local: document.getElementById('eventoLocal').value,
                 orcamento: parseFloat(document.getElementById('eventoOrcamento').value),
                 status: document.getElementById('eventoStatus').value
             };
-
             if (id) {
                 const index = db.eventos.findIndex(e => e.id == id);
                 db.eventos[index] = { ...db.eventos[index], ...data };
             } else {
                 db.eventos.push({ id: Date.now(), ...data });
             }
-            
             saveDB();
-            renderAll(); // Atualiza contagem de eventos e clientes
+            renderAll();
             closeModal(document.getElementById('eventoModal'));
         });
 
         // Salvar Equipamento
         document.getElementById('saveEquipamentoBtn').addEventListener('click', () => {
             const id = document.getElementById('equipamentoId').value;
-            const nome = document.getElementById('equipamentoNome').value;
-            
-            if (!nome) {
-                alert('Nome do Equipamento é obrigatório.');
-                return;
-            }
-
             const data = {
-                nome,
+                nome: document.getElementById('equipamentoNome').value,
                 categoria: document.getElementById('equipamentoCategoria').value,
                 quantidade: parseInt(document.getElementById('equipamentoQuantidade').value),
                 disponivel: parseInt(document.getElementById('equipamentoDisponivel').value),
                 estado: document.getElementById('equipamentoEstado').value
             };
-
             if (id) {
                 const index = db.equipamentos.findIndex(eq => eq.id == id);
                 db.equipamentos[index] = { ...db.equipamentos[index], ...data };
             } else {
                 db.equipamentos.push({ id: Date.now(), ...data });
             }
-            
             saveDB();
             renderAll();
             closeModal(document.getElementById('equipamentoModal'));
@@ -2093,6 +2430,10 @@
             if (btn.classList.contains('delete')) {
                 if (confirm(`Tem certeza que deseja excluir este item (${type})?`)) {
                     db[type + 's'] = db[type + 's'].filter(item => item.id != id);
+                    // Se for orçamento, libera para criar contrato
+                    if (type === 'contrato') {
+                        // Apenas recarrega a lista na próxima vez que abrir
+                    }
                     saveDB();
                     renderAll();
                 }
@@ -2113,17 +2454,43 @@
                     }
                 });
                 
-                // Salva o ID no campo oculto
                 document.getElementById(`${type}Id`).value = id;
-                // Muda o título
                 document.getElementById(`${type}ModalTitle`).textContent = `Editar ${capitalize(type)}`;
                 
-                // Popula selects de cliente se necessário
-                if (modalId === 'orcamentoModal' || modalId === 'contratoModal' || modalId === 'eventoModal') {
-                    populateClienteSelects();
-                    // Garante que o valor correto do select seja selecionado
-                    document.getElementById(`${type}Cliente`).value = item.clienteId;
+                // Popula selects de cliente
+                if (type === 'evento') {
+                    populateClienteSelects('#eventoCliente');
+                    document.getElementById('eventoCliente').value = item.clienteId;
                 }
+                
+                // --- Lógica de Edição de Orçamento (Complexa) ---
+                if (type === 'orcamento') {
+                    populateClienteSelects('#orcamentoCliente');
+                    document.getElementById('orcamentoCliente').value = item.clienteId;
+                    
+                    // Limpa itens antigos e recarrega
+                    document.getElementById('orcamentoItensContainer').innerHTML = '';
+                    item.itens.forEach(i => addOrcamentoItem(i));
+                    
+                    // Calcula totais
+                    calcularTotaisOrcamento();
+                }
+
+                // --- Lógica de Edição de Contrato (Complexa) ---
+                if (type === 'contrato') {
+                    const orcamento = db.orcamentos.find(o => o.id == item.orcamentoId);
+                    const cliente = db.clientes.find(c => c.id == item.clienteId);
+                    
+                    // Desabilita select de orçamento
+                    const selectOrc = document.getElementById('contratoOrcamentoId');
+                    selectOrc.innerHTML = `<option value="${item.orcamentoId}">Nº ${orcamento.numero} (Editando)</option>`;
+                    selectOrc.value = item.orcamentoId;
+                    selectOrc.disabled = true; // Não pode mudar o orçamento de um contrato
+                    
+                    document.getElementById('contratoClienteNome').value = cliente.nome;
+                    document.getElementById('contratoValor').value = item.valor;
+                }
+
 
                 openModal(modalId);
             }
@@ -2138,81 +2505,169 @@
         });
 
 
-        // --- [REFEITO] LÓGICA DE PDF com html2canvas ---
+        // --- LÓGICA DE PDF com html2canvas (REFEITA) ---
         async function generatePDF(item, type) {
             const pdfTemplate = document.getElementById('pdfTemplate');
-            const pdfHeader = document.getElementById('pdfHeader');
-            const pdfLogo = document.getElementById('pdfLogo');
-            const pdfCompanyInfo = document.getElementById('pdfCompanyInfo');
-            const pdfTitle = document.getElementById('pdfTitle');
-            const pdfBody = document.getElementById('pdfBody');
-            
-            // 1. Popula o template com dados da empresa
             const settings = db.settings;
-            document.getElementById('pdfEmpresaNome').textContent = settings.nome;
-            document.getElementById('pdfEmpresaEndereco').textContent = settings.endereco;
-            document.getElementById('pdfEmpresaContato').textContent = settings.contato;
-            document.getElementById('pdfEmpresaTelefone').textContent = settings.telefone;
+            const cliente = db.clientes.find(c => c.id == item.clienteId) || {};
             
-            if (settings.logo) {
-                pdfLogo.src = settings.logo;
-                pdfLogo.style.display = 'block';
-            } else {
-                pdfLogo.style.display = 'none';
-            }
-            
-            // 2. Popula o template com dados do item
-            pdfTitle.textContent = `Detalhes - ${capitalize(type)}`;
-            
-            let tableHTML = '<table>';
-            for (const key in item) {
-                if (key === 'id') continue;
-                
-                let label = capitalize(key);
-                let value = item[key];
-                
-                // Tratamento de dados
-                if (key === 'clienteId') {
-                    label = 'Cliente';
-                    value = (db.clientes.find(c => c.id == value) || {}).nome || 'N/A';
-                } else if (key === 'data' || key === 'vencimento') {
-                    value = formatDateBR(value);
-                } else if (key === 'valor' || key === 'orcamento') {
-                    value = formatCurrency(value);
-                } else if (key === 'tipo' && type === 'cliente') {
-                    label = 'Tipo de Cliente';
-                }
+            let htmlContent = `
+                <div class="pdf-page">
+                    <div id="pdfHeader">
+                        <div id="pdfLogoContainer">
+                            ${settings.logo ? `<img src="${settings.logo}" alt="Logo">` : ''}
+                        </div>
+                        <div id="pdfCompanyInfo">
+                            <strong>${settings.nome}</strong><br>
+                            ${settings.endereco}<br>
+                            ${settings.contato}<br>
+                            ${settings.telefone}
+                        </div>
+                    </div>
+            `;
 
-                tableHTML += `<tr><th>${label}</th><td>${value}</td></tr>`;
+            switch(type) {
+                // --- PDF DE ORÇAMENTO (NOVO) ---
+                case 'orcamento':
+                    htmlContent += `
+                        <h2 id="pdfTitle">Proposta de Orçamento Nº ${item.numero}</h2>
+                        <p>Data: ${formatDateBR(item.data)}</p>
+                        
+                        <h3 class="pdf-section-title">Preparado para:</h3>
+                        <strong>${cliente.nome}</strong><br>
+                        ${cliente.email} / ${cliente.telefone}<br>
+                        ${cliente.endereco}<br>
+
+                        <h3 class="pdf-section-title">Sobre Nós</h3>
+                        <p style="font-size: 11px;">${settings.sobre.replace(/\n/g, '<br>')}</p>
+
+                        <h3 class="pdf-section-title">Escopo do Trabalho e Detalhes</h3>
+                        <p style="font-size: 11px; white-space: pre-wrap;">${item.notas}</p>
+                    </div>
+                    <div class="pdf-page">
+                        <h3 class="pdf-section-title">Detalhamento do Orçamento</h3>
+                        <table class="pdf-orcamento-table">
+                            <thead>
+                                <tr>
+                                    <th>Produto/Serviço</th>
+                                    <th>Descrição</th>
+                                    <th>Qtd.</th>
+                                    <th>Preço Unit.</th>
+                                    <th>Total Item</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${item.itens.map(i => `
+                                    <tr>
+                                        <td>${i.produto}</td>
+                                        <td>${i.descricao}</td>
+                                        <td>${i.qtd}</td>
+                                        <td>${formatCurrency(i.precoUnit)}</td>
+                                        <td>${formatCurrency(i.qtd * i.precoUnit)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        
+                        <table class="pdf-totais-table">
+                            <tr>
+                                <td>Subtotal</td>
+                                <td>${formatCurrency(item.subtotal)}</td>
+                            </tr>
+                            <tr>
+                                <td>Taxas/Impostos (${item.impostoPerc}%)</td>
+                                <td>${formatCurrency(item.subtotal * (item.impostoPerc / 100))}</td>
+                            </tr>
+                            <tr>
+                                <td>Desconto</td>
+                                <td>- ${formatCurrency(item.descontoValor)}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total</strong></td>
+                                <td><strong>${formatCurrency(item.total)}</strong></td>
+                            </tr>
+                        </table>
+
+                        <h3 class="pdf-section-title">Opções de Pagamento</h3>
+                        <p style="font-size: 11px;">(Condições de pagamento conforme descrito no escopo acima ou a combinar)</p>
+
+                        <h3 class="pdf-section-title">Detalhes de Contato</h3>
+                        <p style="font-size: 11px;">
+                            <strong>${settings.nome}</strong><br>
+                            Email: ${settings.contato}<br>
+                            Telefone: ${settings.telefone}
+                        </p>
+                    `;
+                    break;
+
+                // --- PDF DE CONTRATO (NOVO) ---
+                case 'contrato':
+                    htmlContent += `
+                        <h2 id="pdfTitle">Contrato Nº ${item.numero}</h2>
+                        <h3 class="pdf-section-title">Detalhes</h3>
+                        <table>
+                            <tr><th>Cliente</th><td>${cliente.nome}</td></tr>
+                            <tr><th>Evento</th><td>${item.evento}</td></tr>
+                            <tr><th>Data</th><td>${formatDateBR(item.data)}</td></tr>
+                            <tr><th>Valor</th><td>${formatCurrency(item.valor)}</td></tr>
+                        </table>
+                        <h3 class="pdf-section-title">Cláusulas</h3>
+                        <div class="pdf-clausulas">${item.clausulas}</div>
+                    `;
+                    break;
+                
+                // --- PDFs SIMPLES (Antigos) ---
+                default:
+                    htmlContent += `
+                        <h2 id="pdfTitle">Detalhes - ${capitalize(type)}</h2>
+                        <div id="pdfBody">
+                            <table>
+                                ${Object.keys(item).map(key => {
+                                    if (key === 'id' || key === 'clienteId' || key === 'orcamentoId' || key === 'clausulas' || key === 'itens') return '';
+                                    let label = capitalize(key);
+                                    let value = item[key];
+                                    if (key === 'data' || key === 'vencimento') value = formatDateBR(value);
+                                    if (key === 'valor' || key === 'orcamento' || key === 'total') value = formatCurrency(value);
+                                    return `<tr><th>${label}</th><td>${value}</td></tr>`;
+                                }).join('')}
+                            </table>
+                        </div>
+                    `;
+                    break;
             }
-            tableHTML += '</table>';
-            pdfBody.innerHTML = tableHTML;
+            
+            htmlContent += `<div id="pdfFooter">Documento gerado pelo sistema EventPro</div></div>`;
+            pdfTemplate.innerHTML = htmlContent;
 
             // 3. Gera o PDF
             try {
-                const canvas = await html2canvas(pdfTemplate, {
-                    scale: 2, // Aumenta a resolução
-                    useCORS: true
-                });
-                
-                const imgData = canvas.toDataURL('image/png');
                 const doc = new jsPDF('p', 'mm', 'a4');
+                const pages = pdfTemplate.querySelectorAll('.pdf-page');
                 
-                const pdfWidth = doc.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                for (let i = 0; i < pages.length; i++) {
+                    const canvas = await html2canvas(pages[i], { scale: 2, useCORS: true });
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdfWidth = doc.internal.pageSize.getWidth();
+                    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                    
+                    if (i > 0) {
+                        doc.addPage();
+                    }
+                    doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                }
                 
-                doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                doc.save(`${type}_${item.id || item.numero}.pdf`);
+                doc.save(`${type}_${item.numero || item.id}.pdf`);
+                pdfTemplate.innerHTML = ''; // Limpa o template
                 
             } catch (error) {
                 console.error('Erro ao gerar PDF:', error);
                 alert('Ocorreu um erro ao gerar o PDF.');
+                pdfTemplate.innerHTML = '';
             }
         }
 
 
         // --- LÓGICA DE CONFIGURAÇÕES ---
-
         const logoUploadInput = document.getElementById('logoUploadInput');
         const logoPreview = document.getElementById('logoPreview');
         const headerLogo = document.getElementById('headerLogo');
@@ -2224,6 +2679,7 @@
             db.settings.contato = document.getElementById('empresaContato').value;
             db.settings.telefone = document.getElementById('empresaTelefone').value;
             db.settings.endereco = document.getElementById('empresaEndereco').value;
+            db.settings.sobre = document.getElementById('empresaSobre').value; // Salva o 'Sobre'
             
             saveDB();
             loadSettingsView(); // Atualiza o header
@@ -2237,6 +2693,7 @@
             document.getElementById('empresaContato').value = settings.contato;
             document.getElementById('empresaTelefone').value = settings.telefone;
             document.getElementById('empresaEndereco').value = settings.endereco;
+            document.getElementById('empresaSobre').value = settings.sobre; // Carrega o 'Sobre'
             
             // Atualiza o logo
             if (settings.logo) {
@@ -2273,9 +2730,7 @@
         document.getElementById('backupBtn').addEventListener('click', () => {
             const dataStr = JSON.stringify(db, null, 2);
             const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
             const exportFileDefaultName = `eventpro_backup_${new Date().toISOString().slice(0,10)}.json`;
-            
             const linkElement = document.createElement('a');
             linkElement.setAttribute('href', dataUri);
             linkElement.setAttribute('download', exportFileDefaultName);
@@ -2289,20 +2744,16 @@
                 alert('Por favor, selecione um arquivo de backup.');
                 return;
             }
-            
             if (!confirm('Isso substituirá todos os dados atuais. Deseja continuar?')) {
                 return;
             }
-
             const file = fileInput.files[0];
             const reader = new FileReader();
-            
             reader.onload = (e) => {
                 try {
                     const importedDB = JSON.parse(e.target.result);
-                    // Validação simples
                     if (importedDB.settings && importedDB.clientes) {
-                        localStorage.setItem('eventProDB_v2', JSON.stringify(importedDB));
+                        localStorage.setItem('eventProDB_v3', JSON.stringify(importedDB));
                         loadDB();
                         renderAll();
                         alert('Backup restaurado com sucesso!');
@@ -2313,14 +2764,13 @@
                     alert('Erro ao ler o arquivo: ' + error.message);
                 }
             };
-            
             reader.readAsText(file);
         });
 
         // Limpar Sistema
         document.getElementById('clearSystemBtn').addEventListener('click', () => {
             if (confirm('ATENÇÃO! Isso apagará TODOS os dados do sistema (clientes, eventos, configurações, etc.).\n\nEsta ação é irreversível.\n\nDeseja continuar?')) {
-                localStorage.removeItem('eventProDB_v2');
+                localStorage.removeItem('eventProDB_v3');
                 loadDB(); // Carrega o DB padrão
                 renderAll();
                 alert('Sistema limpo com sucesso.');
